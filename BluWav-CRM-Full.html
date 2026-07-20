@@ -1,0 +1,1263 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<meta name="color-scheme" content="dark" />
+<title>BluWav CRM — Sales Platform</title>
+<script src="https://cdn.tailwindcss.com"></script>
+<script>
+tailwind.config={theme:{extend:{colors:{bw:{dark:'#0D1B2A',navy:'#102236',panel:'#0F1E2E',cyan:'#06B6D4',orange:'#F97316',green:'#10B981',purple:'#8B5CF6',yellow:'#F59E0B',red:'#EF4444',border:'#1E3A52',muted:'#64748B'}}}}}
+</script>
+<script src="https://unpkg.com/lucide@latest" defer></script>
+<link rel="preconnect" href="https://fonts.googleapis.com"/>
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin/>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800;900&display=swap" rel="stylesheet"/>
+<style>
+:root{--bw-dark:#0D1B2A;--bw-navy:#102236;--bw-panel:#0F1E2E;--bw-cyan:#06B6D4;--bw-orange:#F97316;--bw-green:#10B981;--bw-purple:#8B5CF6;--bw-yellow:#F59E0B;--bw-red:#EF4444;--bw-border:#1E3A52;--bw-muted:#64748B}
+*{box-sizing:border-box;margin:0;padding:0}
+body{background:#0D1B2A;color:white;font-family:'Inter',system-ui,sans-serif;height:100vh;overflow:hidden;display:flex;flex-direction:column}
+::-webkit-scrollbar{width:5px;height:5px}
+::-webkit-scrollbar-track{background:#0D1B2A}
+::-webkit-scrollbar-thumb{background:#1E3A52;border-radius:999px}
+::-webkit-scrollbar-thumb:hover{background:#06B6D4}
+input,select,textarea{color-scheme:dark}
+@keyframes fadeUp{from{opacity:0;transform:translateY(14px)}to{opacity:1;transform:translateY(0)}}
+@keyframes pulseDot{0%,100%{opacity:1}50%{opacity:.4}}
+@keyframes spin{to{transform:rotate(360deg)}}
+@keyframes countUp{from{opacity:0;transform:translateY(6px)}to{opacity:1;transform:translateY(0)}}
+.fade-up{animation:fadeUp .35s ease}
+.count-anim{animation:countUp .4s ease}
+.nav-item{display:flex;align-items:center;gap:10px;padding:10px 16px;cursor:pointer;border-radius:8px;margin:1px 8px;font-size:.875rem;font-weight:500;transition:all .15s;color:rgba(255,255,255,.6)}
+.nav-item:hover{background:rgba(255,255,255,.05);color:white}
+.nav-item.nav-active{background:rgba(249,115,22,.15);color:#F97316;font-weight:700}
+.section-label{font-size:.62rem;font-weight:700;letter-spacing:.2em;text-transform:uppercase;color:#1E3A52;padding:14px 16px 6px;margin-top:4px}
+.kpi-card{background:#102236;border:1px solid #1E3A52;border-radius:14px;padding:20px;cursor:pointer;transition:border-color .2s;position:relative;overflow:hidden}
+.kpi-card:hover{border-color:#06B6D4}
+.kpi-stripe{position:absolute;top:0;left:0;right:0;height:3px}
+.card-dark{background:#102236;border:1px solid #1E3A52;border-radius:14px;overflow:hidden}
+.eyebrow{font-size:.65rem;font-weight:700;letter-spacing:.2em;text-transform:uppercase;color:#06B6D4}
+.pill{display:inline-flex;align-items:center;padding:2px 10px;border-radius:999px;font-size:.7rem;font-weight:700}
+.stage-badge{display:inline-flex;align-items:center;padding:3px 10px;border-radius:999px;font-size:.7rem;font-weight:700}
+.deal-card{background:#102236;border:1px solid #1E3A52;border-radius:10px;padding:14px;cursor:pointer;transition:border-color .2s,transform .2s}
+.deal-card:hover{border-color:#06B6D4;transform:translateY(-1px)}
+.modal-overlay{position:fixed;inset:0;background:rgba(0,0,0,.8);backdrop-filter:blur(6px);z-index:100;display:flex;align-items:center;justify-content:center}
+.modal-box{background:#102236;border:1px solid #1E3A52;border-radius:20px;color:white;overflow:hidden;max-height:92vh;overflow-y:auto;position:relative;animation:fadeUp .25s ease}
+.toggle-track{width:40px;height:22px;border-radius:999px;cursor:pointer;transition:background .2s;position:relative;flex-shrink:0}
+.toggle-track.on{background:#10B981}
+.toggle-track.off{background:#1E3A52}
+.toggle-knob{width:16px;height:16px;border-radius:50%;background:white;position:absolute;top:3px;transition:left .2s}
+.toggle-track.on .toggle-knob{left:21px}
+.toggle-track.off .toggle-knob{left:3px}
+.tab-btn{padding:8px 16px;font-size:.8rem;font-weight:600;cursor:pointer;border-radius:8px;transition:all .15s;border:none;background:transparent;color:#64748B}
+.tab-btn.active{background:rgba(249,115,22,.15);color:#F97316}
+.tab-btn:hover{color:white}
+.form-input{background:#0D1B2A;border:1px solid #1E3A52;border-radius:8px;padding:9px 14px;color:white;font-size:.875rem;width:100%;outline:none;font-family:'Inter',system-ui,sans-serif}
+.form-input:focus{border-color:#06B6D4}
+.form-label{font-size:.75rem;font-weight:600;color:#64748B;text-transform:uppercase;letter-spacing:.08em;margin-bottom:4px;display:block}
+.btn-orange{background:#F97316;color:white;padding:9px 18px;border-radius:8px;font-size:.85rem;font-weight:700;border:none;cursor:pointer;transition:background .15s;display:inline-flex;align-items:center;gap:6px}
+.btn-orange:hover{background:#EA580C}
+.btn-outline{background:transparent;border:1px solid #1E3A52;color:#06B6D4;padding:9px 18px;border-radius:8px;font-size:.85rem;font-weight:600;cursor:pointer;transition:all .15s;display:inline-flex;align-items:center;gap:6px}
+.btn-outline:hover{border-color:#06B6D4;background:rgba(6,182,212,.08)}
+.btn-ghost{background:transparent;border:none;color:#64748B;padding:6px 10px;border-radius:6px;font-size:.8rem;font-weight:600;cursor:pointer;transition:all .15s}
+.btn-ghost:hover{color:white;background:rgba(255,255,255,.05)}
+.sidebar-overlay{position:fixed;inset:0;background:rgba(0,0,0,.5);z-index:55;display:none}
+@media(max-width:767px){.sidebar-overlay.show{display:block}}
+.chat-bubble-left{background:#1E3A52;border-radius:12px 12px 12px 4px;padding:10px 14px;max-width:70%;font-size:.82rem;color:#CBD5E1}
+.chat-bubble-right{background:rgba(249,115,22,.2);border:1px solid rgba(249,115,22,.3);border-radius:12px 12px 4px 12px;padding:10px 14px;max-width:70%;font-size:.82rem;color:white;margin-left:auto}
+.email-item{padding:14px 16px;border-bottom:1px solid rgba(30,58,82,.5);cursor:pointer;transition:background .15s}
+.email-item:hover{background:rgba(255,255,255,.03)}
+.email-item.unread .email-sender{font-weight:700;color:white}
+.email-item.active-email{background:rgba(249,115,22,.06);border-left:3px solid #F97316}
+.cal-cell{background:#102236;border:1px solid #1E3A52;border-radius:8px;padding:6px;min-height:80px;position:relative;font-size:.72rem}
+.cal-cell.today{border-color:#F97316;background:rgba(249,115,22,.08)}
+.cal-cell.other-month{opacity:.3}
+</style>
+</head>
+<body data-id="0">
+<app-icon data-id="1" hidden data-icon="bar-chart-3" data-palette="Dark"></app-icon>
+
+<!-- LOGIN SCREEN -->
+<div data-id="2" id="login-screen-bw00" style="display:none;position:fixed;inset:0;background:#0D1B2A;z-index:200;display:flex;align-items:center;justify-content:center">
+<div data-id="3" style="width:420px;max-width:95%;background:#102236;border:1px solid #1E3A52;border-radius:20px;padding:40px;box-shadow:0 24px 64px rgba(0,0,0,.5);animation:fadeUp .35s ease">
+<div data-id="4" style="text-align:center;margin-bottom:28px">
+<div data-id="5" style="display:flex;align-items:baseline;justify-content:center;gap:0;margin-bottom:6px"><span data-id="6" style="font-style:italic;font-weight:800;font-size:1.8rem;color:white">Blu</span><span data-id="7" style="font-style:italic;font-weight:800;font-size:1.8rem;color:#06B6D4">Wav</span><span data-id="8" class="pill" style="background:rgba(6,182,212,.15);color:#06B6D4;margin-left:8px;font-size:.7rem">CRM</span></div>
+<p data-id="9" style="color:#64748B;font-size:.9rem">Sign in to your account</p>
+</div>
+<div data-id="10" style="margin-bottom:14px"><label data-id="11" class="form-label">Email</label><input data-id="12" class="form-input" id="login-email-bw01" type="email" placeholder="you@bluwavgrowth.com"/></div>
+<div data-id="13" style="margin-bottom:14px;position:relative"><label data-id="14" class="form-label">Password</label><input data-id="15" class="form-input" id="login-pass-bw02" type="password" placeholder="••••••••"/><button data-id="16" id="login-eye-bw03" style="position:absolute;right:12px;top:28px;background:none;border:none;color:#64748B;cursor:pointer"><i data-id="17" data-lucide="eye" class="w-4 h-4"></i></button></div>
+<div data-id="18" style="display:flex;align-items:center;justify-content:space-between;margin-bottom:20px"><label data-id="19" style="display:flex;align-items:center;gap:6px;font-size:.8rem;color:#64748B;cursor:pointer"><input data-id="20" type="checkbox" id="login-remember-bw04"/>Remember me</label><span data-id="21" style="font-size:.78rem;color:#64748B;cursor:pointer">Forgot password?</span></div>
+<div data-id="22" style="display:flex;gap:8px;margin-bottom:16px">
+<button data-id="23" class="tab-btn" id="login-role-agent-bw05" style="flex:1;border:1px solid #1E3A52">Agent Login</button>
+<button data-id="24" class="tab-btn active" id="login-role-mgr-bw06" style="flex:1;border:1px solid rgba(249,115,22,.3)">Manager Login</button>
+</div>
+<button data-id="25" class="btn-orange" id="login-submit-bw07" style="width:100%;justify-content:center;padding:12px;font-size:.95rem">Sign In →</button>
+<div data-id="26" style="margin-top:20px;padding-top:16px;border-top:1px solid #1E3A52">
+<div data-id="27" style="font-size:.7rem;color:#64748B;text-align:center;margin-bottom:10px">QUICK DEMO ACCESS</div>
+<div data-id="28" style="display:flex;flex-wrap:wrap;gap:6px;justify-content:center">
+<button data-id="29" class="btn-ghost" style="font-size:.72rem;color:#F97316" data-action="demo-login" data-agent="mgr1" data-role="manager">Andrea (Manager)</button>
+<button data-id="30" class="btn-ghost" style="font-size:.72rem;color:#F59E0B" data-action="demo-login" data-agent="a0" data-role="agent_admin">Leah (Agent/Admin)</button>
+<button data-id="31" class="btn-ghost" style="font-size:.72rem;color:#06B6D4" data-action="demo-login" data-agent="a1" data-role="agent">Kurly (Agent)</button>
+<button data-id="32" class="btn-ghost" style="font-size:.72rem;color:#8B5CF6" data-action="demo-login" data-agent="a2" data-role="agent">Tyan (Agent)</button>
+<button data-id="33" class="btn-ghost" style="font-size:.72rem;color:#10B981" data-action="demo-login" data-agent="a3" data-role="agent">Carolina (Agent)</button>
+<button data-id="34" class="btn-ghost" style="font-size:.72rem;color:#EC4899" data-action="demo-login" data-agent="a4" data-role="agent">Nathalie (Agent)</button>
+</div>
+</div>
+<div data-id="35" style="text-align:center;margin-top:20px;display:flex;align-items:center;justify-content:center;gap:6px"><i data-id="36" data-lucide="lock" class="w-3 h-3" style="color:#10B981"></i><span data-id="37" style="font-size:.72rem;color:#10B981">30-Day Free Trial — No credit card required</span></div>
+</div>
+</div>
+
+<!-- HEADER -->
+<header data-id="38" id="app-header-bw01" style="background:#0D1B2A;border-bottom:1px solid #1E3A52;display:none;align-items:center;padding:0 20px;gap:12px;flex-shrink:0;height:56px;z-index:50">
+<button data-id="39" id="hamburger-btn-bw02" class="md:hidden p-2" style="background:none;border:none;color:white;cursor:pointer"><i data-id="40" data-lucide="menu" class="w-6 h-6"></i></button>
+<div data-id="41" style="display:flex;align-items:baseline;gap:0;flex-shrink:0"><span data-id="42" style="font-style:italic;font-weight:800;font-size:1.3rem;color:white">Blu</span><span data-id="43" style="font-style:italic;font-weight:800;font-size:1.3rem;color:#06B6D4">Wav</span><span data-id="44" style="font-size:.6rem;font-weight:700;letter-spacing:.2em;color:#06B6D4;text-transform:uppercase;margin-left:6px">CRM</span></div>
+<span data-id="45" style="color:#1E3A52;font-size:.9rem" class="hidden md:inline">|</span>
+<span data-id="46" id="page-title-bw03" style="color:white;font-weight:600;font-size:.9rem" class="hidden md:inline">Dashboard</span>
+<div data-id="47" style="flex:1"></div>
+<div data-id="48" class="hidden md:flex" style="position:relative"><input data-id="49" id="global-search-bw04" type="text" placeholder="Search contacts, deals..." style="background:#102236;border:1px solid #1E3A52;border-radius:8px;padding:7px 14px 7px 34px;color:white;font-size:.85rem;width:220px;outline:none" /><i data-id="50" data-lucide="search" class="w-4 h-4" style="position:absolute;left:10px;top:50%;transform:translateY(-50%);color:#64748B"></i></div>
+<button data-id="51" id="notif-btn-bw05" style="position:relative;background:none;border:none;color:white;cursor:pointer;padding:6px"><i data-id="52" data-lucide="bell" class="w-5 h-5"></i><span data-id="53" id="notif-badge-bw" style="position:absolute;top:2px;right:0;background:#F97316;color:white;font-size:.6rem;font-weight:800;width:16px;height:16px;border-radius:50%;display:flex;align-items:center;justify-content:center">3</span></button>
+<!-- User Avatar + Dropdown -->
+<div data-id="54" id="user-menu-wrap-bw" style="position:relative;display:flex;align-items:center;gap:8px;cursor:pointer">
+<div data-id="55" id="header-avatar-bw" style="width:34px;height:34px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:.72rem;font-weight:800;flex-shrink:0"></div>
+<span data-id="56" id="header-username-bw" style="font-size:.82rem;font-weight:600" class="hidden md:inline"></span>
+<span data-id="57" id="header-role-badge-bw" class="pill hidden md:inline-flex" style="font-size:.6rem"></span>
+</div>
+</header>
+
+<!-- USER DROPDOWN -->
+<div data-id="58" id="user-dropdown-bw" style="display:none;position:fixed;top:56px;right:20px;width:280px;background:#102236;border:1px solid #1E3A52;border-radius:14px;z-index:90;overflow:hidden;animation:fadeUp .2s ease">
+<div data-id="59" style="padding:10px 12px;font-size:.65rem;font-weight:700;letter-spacing:.15em;color:#64748B;text-transform:uppercase;border-bottom:1px solid #1E3A52">Switch Account</div>
+<div data-id="60" id="user-dd-list-bw" style="padding:4px 0"></div>
+<div data-id="61" style="border-top:1px solid #1E3A52;padding:4px 0"><div data-id="62" class="nav-item" style="margin:0 4px;color:#EF4444" data-action="sign-out"><i data-id="63" data-lucide="log-out" class="w-4 h-4"></i>Sign Out</div></div>
+</div>
+
+<!-- NOTIFICATION DROPDOWN -->
+<div data-id="64" id="notif-dropdown-bw10" style="display:none;position:fixed;top:56px;right:80px;width:320px;background:#102236;border:1px solid #1E3A52;border-radius:14px;z-index:90;overflow:hidden;animation:fadeUp .2s ease">
+<div data-id="65" style="padding:14px 16px;border-bottom:1px solid #1E3A52"><span data-id="66" style="font-weight:700;font-size:.85rem">Notifications</span></div>
+<div data-id="67" style="padding:0">
+<div data-id="68" style="padding:12px 16px;border-bottom:1px solid rgba(30,58,82,.5);display:flex;gap:10px"><div data-id="69" style="width:8px;height:8px;border-radius:50%;background:#F97316;margin-top:6px;flex-shrink:0"></div><div data-id="70"><div data-id="71" style="font-size:.8rem;font-weight:600">New lead assigned</div><div data-id="72" style="font-size:.72rem;color:#64748B">Kezia Fairweather — Bright Ideas Agency</div></div></div>
+<div data-id="73" style="padding:12px 16px;border-bottom:1px solid rgba(30,58,82,.5);display:flex;gap:10px"><div data-id="74" style="width:8px;height:8px;border-radius:50%;background:#06B6D4;margin-top:6px;flex-shrink:0"></div><div data-id="75"><div data-id="76" style="font-size:.8rem;font-weight:600">Deal stage updated</div><div data-id="77" style="font-size:.72rem;color:#64748B">BlueWater Marina moved to Qualified</div></div></div>
+<div data-id="78" style="padding:12px 16px;display:flex;gap:10px"><div data-id="79" style="width:8px;height:8px;border-radius:50%;background:#10B981;margin-top:6px;flex-shrink:0"></div><div data-id="80"><div data-id="81" style="font-size:.8rem;font-weight:600">Commission processed</div><div data-id="82" style="font-size:.72rem;color:#64748B">$360 pending for Thompson Insurance</div></div></div>
+</div>
+</div>
+
+<!-- BODY -->
+<div data-id="83" id="app-body-bw" style="display:none;flex:1;overflow:hidden">
+<!-- SIDEBAR OVERLAY (mobile) -->
+<div data-id="84" id="sidebar-overlay-bw11" class="sidebar-overlay"></div>
+<!-- SIDEBAR -->
+<aside data-id="85" id="sidebar-bw12" class="hidden md:flex" style="width:240px;background:#0D1B2A;border-right:1px solid #1E3A52;flex-direction:column;flex-shrink:0;overflow-y:auto;padding:12px 0;z-index:60">
+<div data-id="86" id="sidebar-nav-bw"></div>
+<div data-id="87" style="flex:1"></div>
+<!-- Trial Banner -->
+<div data-id="88" style="background:linear-gradient(135deg,rgba(249,115,22,.15),rgba(6,182,212,.1));border:1px solid rgba(249,115,22,.3);border-radius:10px;margin:8px;padding:12px">
+<div data-id="89" style="font-size:.78rem;font-weight:600;color:#F97316;margin-bottom:2px">🎉 Free Trial</div>
+<div data-id="90" style="font-size:.72rem;color:#64748B;margin-bottom:8px">23 days remaining</div>
+<button data-id="91" class="btn-orange" style="width:100%;font-size:.72rem;padding:6px;justify-content:center;border-radius:6px" data-action="navigate" data-page="billing">Upgrade Plan →</button>
+</div>
+<!-- Agent Mini Card -->
+<div data-id="92" id="sidebar-agent-card-bw" style="background:#102236;border:1px solid #1E3A52;border-radius:10px;margin:8px;padding:10px 12px;display:flex;align-items:center;gap:10px"></div>
+</aside>
+<!-- MAIN CONTENT -->
+<main data-id="93" id="main-content-bw15" style="flex:1;overflow-y:auto;background:#0D1B2A;padding:24px"></main>
+</div>
+
+<!-- MODAL OVERLAY -->
+<div data-id="94" id="modal-overlay-bw16" style="display:none" class="modal-overlay"></div>
+
+<!-- WhatsApp FAB -->
+<button data-id="95" id="whatsapp-fab-bw17" style="position:fixed;bottom:24px;right:24px;width:52px;height:52px;border-radius:50%;background:#25D366;border:none;color:white;cursor:pointer;z-index:40;display:none;align-items:center;justify-content:center;box-shadow:0 4px 16px rgba(37,211,102,.4);transition:transform .15s"><i data-id="96" data-lucide="message-circle" class="w-6 h-6"></i></button>
+
+<script>
+// ===== IN-MEMORY DATABASE =====
+const DB={
+contacts:[
+{id:'c1',name:'Dianne Saunders',email:'dianne@broadstreetboutique.com',phone:'+1-242-555-0102',business:'Broad Street Boutique',island:'Bahamas',is_crm_client:false,created_at:'2026-07-01',assigned_agent:'a1',notes:''},
+{id:'c2',name:'Kristie Evelyn',email:'kristie@butterflyboutique.bb',phone:'+1-246-555-0213',business:'Butterfly Boutique',island:'Barbados',is_crm_client:false,created_at:'2026-07-03',assigned_agent:'a2',notes:''},
+{id:'c3',name:'Goretti Paul',email:'goretti@hrwise.lc',phone:'+1-758-555-0341',business:'HR Wise Inc',island:'St. Lucia',is_crm_client:false,created_at:'2026-07-05',assigned_agent:'a1',notes:''},
+{id:'c4',name:'Roger Worme',email:'roger@driveamatic.bb',phone:'+1-246-555-0478',business:'Drive-a-Matic Car Rentals',island:'Barbados',is_crm_client:false,created_at:'2026-07-06',assigned_agent:'a3',notes:''},
+{id:'c5',name:'Anesta Knight',email:'anesta@knightagencies.com',phone:'+1-868-555-0512',business:'Knight Agencies',island:'Trinidad',is_crm_client:false,created_at:'2026-07-08',assigned_agent:'a0',notes:''},
+{id:'c6',name:'Marcus Benjamin',email:'marcus@islandbites.tt',phone:'+1-868-555-0601',business:'Island Bites Restaurant',island:'Trinidad',is_crm_client:false,created_at:'2026-07-09',assigned_agent:'a3',notes:''},
+{id:'c7',name:'Sonia Clarke',email:'sonia@caribhealthpartners.jm',phone:'+1-876-555-0714',business:'Caribbean Health Partners',island:'Jamaica',is_crm_client:false,created_at:'2026-06-20',assigned_agent:'a2',notes:''},
+{id:'c8',name:'Devon Alexander',email:'devon@sunriseproperties.bb',phone:'+1-246-555-0832',business:'Sunrise Properties Ltd',island:'Barbados',is_crm_client:false,created_at:'2026-06-18',assigned_agent:'a2',notes:''},
+{id:'c9',name:'Kezia Fairweather',email:'kezia@brightideas.tt',phone:'+1-868-334-9920',business:'Bright Ideas Agency',island:'Trinidad',is_crm_client:false,created_at:'2026-07-10',assigned_agent:'a3',notes:''},
+{id:'c10',name:'Marco Phillip',email:'marco@riverarest.tt',phone:'+1-868-667-1122',business:'Rivera Restaurant Group',island:'Trinidad',is_crm_client:true,created_at:'2026-06-15',assigned_agent:'a3',notes:''},
+{id:'c11',name:'Priya Gopaul',email:'priya@gopaullegal.com',phone:'+1-868-772-5534',business:'Gopaul Legal Associates',island:'Trinidad',is_crm_client:false,created_at:'2026-06-10',assigned_agent:'a3',notes:''},
+{id:'c12',name:'Dale Baptiste',email:'dale@tjautott.com',phone:'+1-868-445-8877',business:'TJ Auto Repairs',island:'Tobago',is_crm_client:false,created_at:'2026-05-28',assigned_agent:'a3',notes:''},
+{id:'c13',name:'Nalini Seepersad',email:'nalini@tropictech.tt',phone:'+1-868-555-1301',business:'Tropic Tech Solutions',island:'Trinidad',is_crm_client:false,created_at:'2026-06-05',assigned_agent:'a3',notes:''},
+{id:'c14',name:'Fabian Augustin',email:'fabian@bluewatermarina.lc',phone:'+1-758-555-1402',business:'BlueWater Marina',island:'St. Lucia',is_crm_client:true,created_at:'2026-06-25',assigned_agent:'a1',notes:''},
+{id:'c15',name:'Simone Walcott',email:'simone@walcottaccounting.bb',phone:'+1-246-555-1503',business:'Walcott Accounting Firm',island:'Barbados',is_crm_client:false,created_at:'2026-05-20',assigned_agent:'a2',notes:''},
+{id:'c16',name:'Jerome Fraser',email:'jerome@fraserconstruction.ag',phone:'+1-268-555-1604',business:'Fraser Construction',island:'Antigua',is_crm_client:false,created_at:'2026-05-15',assigned_agent:'a1',notes:''},
+{id:'c17',name:'Monique Dupont',email:'monique@dupontspa.mq',phone:'+596-555-1705',business:'Dupont Spa & Wellness',island:'St. Lucia',is_crm_client:false,created_at:'2026-06-01',assigned_agent:'a1',notes:''},
+{id:'c18',name:'Calvin Richards',email:'calvin@richardsbakery.jm',phone:'+1-876-555-1806',business:'Richards Bakery',island:'Jamaica',is_crm_client:true,created_at:'2026-05-10',assigned_agent:'a2',notes:''},
+{id:'c19',name:'Tamara Noel',email:'tamara@noeleventplanning.tt',phone:'+1-868-555-1907',business:'Noel Event Planning',island:'Trinidad',is_crm_client:false,created_at:'2026-06-28',assigned_agent:'a3',notes:''},
+{id:'c20',name:'Patrick Haynes',email:'patrick@haynesimport.bz',phone:'+501-555-2008',business:'Haynes Import & Export',island:'Belize',is_crm_client:false,created_at:'2026-06-12',assigned_agent:'a2',notes:''},
+{id:'c21',name:'Lorraine Cummings',email:'lorraine@cummingslaw.bb',phone:'+1-246-555-2109',business:'Cummings Law Firm',island:'Barbados',is_crm_client:false,created_at:'2026-04-20',assigned_agent:'a2',notes:''},
+{id:'c22',name:'Andre Charles',email:'andre@charlesphotography.lc',phone:'+1-758-555-2210',business:'Charles Photography Studio',island:'St. Lucia',is_crm_client:false,created_at:'2026-05-05',assigned_agent:'a1',notes:''},
+{id:'c23',name:'Yvette Springer',email:'yvette@springerdental.gd',phone:'+1-473-555-2311',business:'Springer Dental Clinic',island:'Grenada',is_crm_client:false,created_at:'2026-04-15',assigned_agent:'a1',notes:''},
+{id:'c24',name:'Desmond Hunte',email:'desmond@huntefreight.tt',phone:'+1-868-555-2412',business:'Hunte Freight Services',island:'Trinidad',is_crm_client:false,created_at:'2026-06-08',assigned_agent:'a3',notes:''},
+{id:'c25',name:'Sandra Moore',email:'sandra@moorespharmacy.jm',phone:'+1-876-555-2513',business:"Moore's Pharmacy",island:'Jamaica',is_crm_client:false,created_at:'2026-05-25',assigned_agent:'a0',notes:''},
+{id:'c26',name:'Clifton Gill',email:'clifton@gillengineering.tt',phone:'+1-868-555-2614',business:'Gill Engineering Ltd',island:'Trinidad',is_crm_client:false,created_at:'2026-07-02',assigned_agent:'a3',notes:''},
+{id:'c27',name:'Marcia Thompson',email:'marcia@thompsoninsurance.jm',phone:'+1-876-555-2715',business:'Thompson Insurance',island:'Jamaica',is_crm_client:true,created_at:'2026-04-10',assigned_agent:'a2',notes:''},
+{id:'c28',name:'Leon Williams',email:'leon@williamsprinting.bb',phone:'+1-246-555-2816',business:'Williams Printing & Signs',island:'Barbados',is_crm_client:false,created_at:'2026-06-22',assigned_agent:'a2',notes:''},
+{id:'c29',name:'Abigail Peters',email:'abigail@petersflorist.kn',phone:'+1-869-555-2917',business:'Peters Florist',island:'St. Kitts',is_crm_client:false,created_at:'2026-05-12',assigned_agent:'a1',notes:''},
+{id:'c30',name:'Rupert Alleyne',email:'rupert@alleynerum.bb',phone:'+1-246-555-3018',business:'Alleyne Rum Distillery',island:'Barbados',is_crm_client:false,created_at:'2026-04-25',assigned_agent:'a2',notes:''},
+{id:'c31',name:'Nadine Boyce',email:'nadine@boycerealestate.gy',phone:'+592-555-3119',business:'Boyce Real Estate',island:'Guyana',is_crm_client:false,created_at:'2026-06-30',assigned_agent:'a4',notes:''},
+{id:'c32',name:'Victor Ramkissoon',email:'victor@ramkissoonhardware.tt',phone:'+1-868-555-3220',business:'Ramkissoon Hardware',island:'Trinidad',is_crm_client:true,created_at:'2026-05-18',assigned_agent:'a3',notes:''},
+{id:'c33',name:'Cheryl Munroe',email:'cheryl@munroetravel.jm',phone:'+1-876-555-3321',business:'Munroe Travel Agency',island:'Jamaica',is_crm_client:false,created_at:'2026-07-04',assigned_agent:'a0',notes:''},
+{id:'c34',name:'Shane Etienne',email:'shane@etiennecatering.lc',phone:'+1-758-555-3422',business:'Etienne Catering Services',island:'St. Lucia',is_crm_client:false,created_at:'2026-06-14',assigned_agent:'a1',notes:''},
+{id:'c35',name:'Tricia Browne',email:'tricia@brownehotel.gd',phone:'+1-473-555-3523',business:'Browne Boutique Hotel',island:'Grenada',is_crm_client:false,created_at:'2026-04-28',assigned_agent:'a1',notes:''},
+{id:'c36',name:'Jason Nurse',email:'jason@nurseitconsulting.bb',phone:'+1-246-555-3624',business:'Nurse IT Consulting',island:'Barbados',is_crm_client:false,created_at:'2026-07-11',assigned_agent:'a2',notes:''},
+{id:'c37',name:'Melissa Parris',email:'melissa@parrisdesign.tt',phone:'+1-868-555-3725',business:'Parris Graphic Design',island:'Trinidad',is_crm_client:false,created_at:'2026-06-16',assigned_agent:'a3',notes:''},
+{id:'c38',name:'Gordon Sobers',email:'gordon@soberssecurity.bb',phone:'+1-246-555-3826',business:'Sobers Security Services',island:'Barbados',is_crm_client:false,created_at:'2026-05-08',assigned_agent:'a2',notes:''},
+{id:'c39',name:'Felicia Boateng',email:'felicia@boatengfashion.jm',phone:'+1-876-555-3927',business:'Boateng Fashion House',island:'Jamaica',is_crm_client:false,created_at:'2026-07-13',assigned_agent:'a2',notes:''},
+{id:'c40',name:'Orville Bobb',email:'orville@bobbagri.gy',phone:'+592-555-4028',business:'Bobb Agriculture Co',island:'Guyana',is_crm_client:false,created_at:'2026-05-30',assigned_agent:'a4',notes:''},
+{id:'c41',name:'Crystal Cadette',email:'crystal@cadetteskincare.lc',phone:'+1-758-555-4129',business:'Cadette Skin Care',island:'St. Lucia',is_crm_client:true,created_at:'2026-04-18',assigned_agent:'a1',notes:''},
+{id:'c42',name:'Nathan Best',email:'nathan@bestelectronics.tt',phone:'+1-868-555-4230',business:'Best Electronics',island:'Trinidad',is_crm_client:false,created_at:'2026-07-14',assigned_agent:'a3',notes:''},
+{id:'c43',name:'Olivia Crichlow',email:'olivia@crichlowcomms.bb',phone:'+1-246-555-4331',business:'Crichlow Communications',island:'Barbados',is_crm_client:false,created_at:'2026-06-03',assigned_agent:'a2',notes:''},
+{id:'c44',name:'Fabian Sylvester',email:'fabian@sylvestersolar.ag',phone:'+1-268-555-4432',business:'Sylvester Solar Energy',island:'Antigua',is_crm_client:false,created_at:'2026-07-15',assigned_agent:'a1',notes:''},
+{id:'c45',name:'Yolanda Griffith',email:'yolanda@griffithconsult.gy',phone:'+592-555-4533',business:'Griffith Consultancy',island:'Guyana',is_crm_client:false,created_at:'2026-05-22',assigned_agent:'a4',notes:''},
+{id:'c46',name:'Damian Lashley',email:'damian@lashleymarine.bb',phone:'+1-246-555-4634',business:'Lashley Marine Services',island:'Barbados',is_crm_client:false,created_at:'2026-06-26',assigned_agent:'a2',notes:''},
+{id:'c47',name:'Ingrid Norville',email:'ingrid@norvillenursery.tt',phone:'+1-868-555-4735',business:'Norville Nursery & Garden',island:'Trinidad',is_crm_client:false,created_at:'2026-07-16',assigned_agent:'a3',notes:''},
+{id:'c48',name:'Clive Jackman',email:'clive@jackmanfinancial.jm',phone:'+1-876-555-4836',business:'Jackman Financial Group',island:'Jamaica',is_crm_client:true,created_at:'2026-04-05',assigned_agent:'a2',notes:''},
+{id:'c49',name:'Petra Duplessis',email:'petra@duplessislogistics.lc',phone:'+1-758-555-4937',business:'Duplessis Logistics',island:'St. Lucia',is_crm_client:false,created_at:'2026-07-17',assigned_agent:'a1',notes:''},
+{id:'c50',name:'Howard Small',email:'howard@smallsbakery.bs',phone:'+1-242-555-5038',business:"Small's Bakery & Café",island:'Bahamas',is_crm_client:false,created_at:'2026-06-19',assigned_agent:'a1',notes:''},
+{id:'c51',name:'Camille Prescod',email:'camille@prescodaccounting.bb',phone:'+1-246-555-5139',business:'Prescod Accounting',island:'Barbados',is_crm_client:false,created_at:'2026-07-18',assigned_agent:'a2',notes:''},
+{id:'c52',name:'Leonard Springer',email:'leonard@springertelecom.tt',phone:'+1-868-555-5240',business:'Springer Telecom',island:'Trinidad',is_crm_client:false,created_at:'2026-07-19',assigned_agent:'a3',notes:''}
+],
+agents:[
+{id:'mgr1',name:'Andrea M. Tanguay',email:'andrea@bluwavgrowth.com',status:'active',whatsapp:'+1-868-778-9900',is_manager:true,territory:'All Regions',targets:{deals:0,crm:0},avatar:'AT',joined:'2026-01-01',color:'#F97316',role:'manager'},
+{id:'a0',name:'Leah Ryan',email:'leah@bluwavgrowth.com',status:'active',whatsapp:'+1-868-441-9923',is_manager:false,territory:'All Regions',targets:{deals:6,crm:5},avatar:'LR',joined:'2026-03-01',color:'#F59E0B',role:'agent_admin'},
+{id:'a1',name:'Kurly Harrow',email:'kurly@bluwavgrowth.com',status:'active',whatsapp:'+1-758-712-4491',is_manager:false,territory:'St. Lucia',targets:{deals:4,crm:3},avatar:'KH',joined:'2026-05-10',color:'#06B6D4',role:'agent'},
+{id:'a2',name:'Tyan Reid',email:'tyan@bluwavgrowth.com',status:'active',whatsapp:'+1-876-554-8823',is_manager:false,territory:'Jamaica',targets:{deals:5,crm:4},avatar:'TR',joined:'2026-04-15',color:'#8B5CF6',role:'agent'},
+{id:'a3',name:'Carolina Craigwell',email:'carolina@bluwavgrowth.com',status:'active',whatsapp:'+1-868-331-6654',is_manager:false,territory:'Trinidad',targets:{deals:4,crm:3},avatar:'CC',joined:'2026-06-01',color:'#10B981',role:'agent'},
+{id:'a4',name:'Nathalie Samaroo',email:'nathalie@bluwavgrowth.com',status:'active',whatsapp:'+1-592-612-7734',is_manager:false,territory:'Guyana',targets:{deals:4,crm:3},avatar:'NS',joined:'2026-07-01',color:'#EC4899',role:'agent'}
+],
+deals:[
+{id:'d1',contact_id:'c9',agent_id:'a3',name:'Bright Ideas Agency — Current',type:'Current',value:3000,stage:'Lead',is_crm_deal:false,created_at:'2026-07-10',updated_at:'2026-07-10',notes:''},
+{id:'d2',contact_id:'c14',agent_id:'a1',name:'BlueWater Marina — Surge',type:'Surge',value:6000,stage:'Qualified',is_crm_deal:false,created_at:'2026-07-08',updated_at:'2026-07-09',notes:''},
+{id:'d3',contact_id:'c7',agent_id:'a2',name:'Caribbean Health Partners — Current',type:'Current',value:3000,stage:'Proposal',is_crm_deal:false,created_at:'2026-07-05',updated_at:'2026-07-07',notes:''},
+{id:'d4',contact_id:'c27',agent_id:'a2',name:'Thompson Insurance — Ripple',type:'Ripple',value:1800,stage:'Won',is_crm_deal:false,created_at:'2026-07-01',updated_at:'2026-07-12',notes:''},
+{id:'d5',contact_id:'c10',agent_id:'a3',name:'Rivera Restaurant — CRM Premium',type:'Current',value:179,stage:'Won',is_crm_deal:true,created_at:'2026-07-15',updated_at:'2026-07-15',notes:''},
+{id:'d6',contact_id:'c32',agent_id:'a3',name:'Ramkissoon Hardware — CRM Lite',type:'Ripple',value:99,stage:'Won',is_crm_deal:true,created_at:'2026-07-16',updated_at:'2026-07-16',notes:''},
+{id:'d7',contact_id:'c25',agent_id:'a0',name:'Sandra Moore — Surge',type:'Surge',value:6000,stage:'Qualified',is_crm_deal:false,created_at:'2026-07-17',updated_at:'2026-07-18',notes:''},
+{id:'d8',contact_id:'c31',agent_id:'a4',name:'Nadine Boyce — Current',type:'Current',value:3000,stage:'Lead',is_crm_deal:false,created_at:'2026-07-19',updated_at:'2026-07-19',notes:''}
+],
+activities:[
+{id:'act1',contact_id:'c7',deal_id:'d3',agent_id:'a2',type:'Call',desc:'Discovery call with Caribbean Health Partners. Interested in Current package, needs pricing breakdown.',created_at:'2026-07-07 14:10'},
+{id:'act2',contact_id:'c14',deal_id:'d2',agent_id:'a1',type:'Meeting',desc:'Presented Surge package to BlueWater Marina. Strong interest, moving to Qualified.',created_at:'2026-07-09 09:00'},
+{id:'act3',contact_id:'c27',deal_id:'d4',agent_id:'a2',type:'WhatsApp',desc:'Confirmed deal with Thompson Insurance. Ripple package signed.',created_at:'2026-07-12 11:15'},
+{id:'act4',contact_id:'c9',deal_id:'d1',agent_id:'a3',type:'Email',desc:'Sent intro email to Bright Ideas Agency. Awaiting response.',created_at:'2026-07-10 08:30'},
+{id:'act5',contact_id:'c10',deal_id:'d5',agent_id:'a3',type:'WhatsApp',desc:'Onboarded Rivera Restaurant Group to CRM Premium. Trial started.',created_at:'2026-07-15 10:00'},
+{id:'act6',contact_id:'c32',deal_id:'d6',agent_id:'a3',type:'WhatsApp',desc:'Onboarded Ramkissoon Hardware to CRM Lite. Account active.',created_at:'2026-07-16 14:30'}
+],
+tasks:[
+{id:'t1',agent_id:'a3',contact_id:'c9',deal_id:'d1',type:'FirstContact',status:'open',due_at:'2026-07-22',created_at:'2026-07-10'},
+{id:'t2',agent_id:'a2',contact_id:'c7',deal_id:'d3',type:'ProposalFollowUp',status:'open',due_at:'2026-07-21',created_at:'2026-07-07'},
+{id:'t3',agent_id:'a1',contact_id:'c14',deal_id:'d2',type:'NegotiationFollowUp',status:'open',due_at:'2026-07-21',created_at:'2026-07-09'},
+{id:'t4',agent_id:'mgr1',contact_id:null,deal_id:'d2',type:'ManagerReview',status:'open',due_at:'2026-07-22',created_at:'2026-07-09'}
+],
+commissions:[
+{id:'com1',agent_id:'a2',deal_id:'d4',month:'2026-07',amount:360,status:'pending',payout_date:'2026-08-15',created_at:'2026-07-12'},
+{id:'com2',agent_id:'a3',deal_id:'d5',month:'2026-07',amount:35.80,status:'pending',payout_date:'2026-08-15',created_at:'2026-07-15'},
+{id:'com3',agent_id:'a3',deal_id:'d6',month:'2026-07',amount:19.80,status:'pending',payout_date:'2026-08-15',created_at:'2026-07-16'}
+],
+subscriptions:[
+{id:'sub1',contact_id:'c10',agent_id:'a3',plan:'premium',price:179,status:'active',started_at:'2026-07-15',ended_at:null},
+{id:'sub2',contact_id:'c32',agent_id:'a3',plan:'lite',price:99,status:'active',started_at:'2026-07-16',ended_at:null}
+],
+automations:[
+{id:'auto1',trigger:'contact_created',name:'New Lead Welcome',action:'whatsapp',template:"Hi {name}! Welcome to BluWav Growth. We'll be in touch within 24hrs.",active:true,runs:8},
+{id:'auto2',trigger:'stage_proposal',name:'Proposal Sent Confirmation',action:'whatsapp',template:'Hi {name}, your proposal has been sent! Reply with any questions.',active:true,runs:4},
+{id:'auto3',trigger:'stage_negotiation',name:'Negotiation Follow-Up Reminder',action:'task',template:'Follow up with {name} on negotiation.',active:true,runs:3},
+{id:'auto4',trigger:'deal_won',name:'Deal Won Thank-You',action:'whatsapp',template:'Congratulations {name}! Your BluWav Growth package is now active. 🎉',active:true,runs:6},
+{id:'auto5',trigger:'crm_unlock',name:'CRM Unlock Achievement',action:'whatsapp',template:"You've unlocked 25% CRM commissions! Keep it up.",active:false,runs:1},
+{id:'auto6',trigger:'task_overdue',name:'Overdue Task Alert',action:'whatsapp',template:'Reminder: You have an overdue task for {name}.',active:true,runs:12}
+]};
+
+const COMMISSION_RATES={Ripple:0.20,Current:0.20,Surge:0.20,crm_base:0.20,crm_unlocked:0.25,unlock_threshold:3};
+function calcCommission(deal){const r=COMMISSION_RATES[deal.type]||0.20;return parseFloat((deal.value*r).toFixed(2))}
+function getAgentCRMCount(aid){return DB.subscriptions.filter(s=>s.agent_id===aid&&s.status==='active').length}
+function isUnlocked(aid){return getAgentCRMCount(aid)>=COMMISSION_RATES.unlock_threshold}
+function getCRMRate(aid){return isUnlocked(aid)?COMMISSION_RATES.crm_unlocked:COMMISSION_RATES.crm_base}
+function getAgentMonthlyCommission(aid,m){return DB.commissions.filter(c=>c.agent_id===aid&&c.month===m).reduce((s,c)=>s+c.amount,0)}
+
+// ===== ROLE HELPERS =====
+function getAgentRole(agent){
+if(!agent)return 'agent';
+if(agent.role)return agent.role;
+if(agent.is_manager)return 'manager';
+return 'agent';
+}
+function getRoleBadgeLabel(role){
+if(role==='manager')return 'Manager';
+if(role==='agent_admin')return 'Agent/Admin';
+return 'Agent';
+}
+function getRoleBadgeColors(role){
+if(role==='manager')return {bg:'rgba(249,115,22,.15)',color:'#F97316'};
+if(role==='agent_admin')return {bg:'rgba(245,158,11,.15)',color:'#F59E0B'};
+return {bg:'rgba(6,182,212,.15)',color:'#06B6D4'};
+}
+
+// ===== SCOPED DATA =====
+function scopedContacts(){if(APP.currentRole==='manager'||APP.currentRole==='agent_admin')return DB.contacts;return DB.contacts.filter(c=>c.assigned_agent===APP.currentAgent)}
+function scopedDeals(){if(APP.currentRole==='manager'||APP.currentRole==='agent_admin')return DB.deals;return DB.deals.filter(d=>d.agent_id===APP.currentAgent)}
+function scopedActivities(){if(APP.currentRole==='manager'||APP.currentRole==='agent_admin')return DB.activities;return DB.activities.filter(a=>a.agent_id===APP.currentAgent)}
+function scopedTasks(){if(APP.currentRole==='manager'||APP.currentRole==='agent_admin')return DB.tasks;return DB.tasks.filter(t=>t.agent_id===APP.currentAgent)}
+function scopedCommissions(){if(APP.currentRole==='manager'||APP.currentRole==='agent_admin')return DB.commissions;return DB.commissions.filter(c=>c.agent_id===APP.currentAgent)}
+
+function getLeaderboard(){return DB.agents.filter(a=>!a.is_manager&&getAgentRole(a)!=='agent_admin').concat(DB.agents.filter(a=>getAgentRole(a)==='agent_admin')).filter((v,i,s)=>s.findIndex(x=>x.id===v.id)===i).filter(a=>!a.is_manager).map(a=>{const won=DB.deals.filter(d=>d.agent_id===a.id&&d.stage==='Won');const earnings=DB.commissions.filter(c=>c.agent_id===a.id&&c.month==='2026-07').reduce((s,c)=>s+c.amount,0);return{...a,deals_won:won.length,revenue:won.reduce((s,d)=>s+d.value,0),earnings,crm_count:getAgentCRMCount(a.id)}}).sort((a,b)=>b.revenue-a.revenue).map((a,i)=>({...a,rank:i+1}))}
+
+// ===== APP STATE =====
+const APP={page:'login',currentAgent:'mgr1',currentRole:'manager',modal:null,selectedContact:null,selectedDeal:null,selectedAgent:null,contactSearch:'',contactFilter:'all',contactSort:'newest',dealsView:'kanban',dealsFilter:'all',dealsAgentFilter:'all',dealsTypeFilter:'all',activitiesTab:'all',activitiesTypeFilter:'all',contactModalTab:'overview',settingsSection:'account',dashViewAgent:'all',selectedEmailIdx:0,selectedChatIdx:0,waMessages:{},calMonth:6,calYear:2026,orgTab:'team',nextId:{c:53,d:9,act:7,t:5,com:4,sub:3,auto:7}};
+
+function showToast(msg,type='success'){const colors={success:'#10B981',info:'#06B6D4',warning:'#F59E0B',error:'#EF4444'};const el=document.createElement('div');el.style.cssText=`position:fixed;bottom:24px;right:80px;background:#102236;border:1px solid #1E3A52;border-left:4px solid ${colors[type]||colors.success};border-radius:12px;padding:14px 20px;color:white;font-size:.875rem;font-weight:600;box-shadow:0 8px 32px rgba(0,0,0,.4);z-index:9999;max-width:340px;animation:fadeUp .3s ease;pointer-events:none;`;el.textContent=msg;document.body.appendChild(el);setTimeout(()=>el.remove(),3500)}
+
+function onStageChange(dealId,newStage){const deal=DB.deals.find(d=>d.id===dealId);if(!deal)return;deal.stage=newStage;deal.updated_at='2026-07-20';if(newStage==='Won'){const comm=calcCommission(deal);DB.commissions.push({id:'com'+(APP.nextId.com++),agent_id:deal.agent_id,deal_id:deal.id,month:'2026-07',amount:comm,status:'pending',payout_date:'2026-08-15',created_at:'2026-07-20'})}triggerAutomation('stage_'+newStage.toLowerCase(),deal.contact_id);render();showToast('Deal moved to '+newStage,'info')}
+
+function triggerAutomation(trigger,contactId){const auto=DB.automations.find(a=>a.trigger===trigger&&a.active);if(!auto)return;auto.runs++;const contact=DB.contacts.find(c=>c.id===contactId);const msg=auto.template.replace('{name}',contact?contact.name:'Client');if(auto.action==='whatsapp'){DB.activities.unshift({id:'act'+(APP.nextId.act++),contact_id:contactId,deal_id:null,agent_id:APP.currentAgent,type:'WhatsApp',desc:'[Auto] '+msg,created_at:'2026-07-20 01:05'})}}
+
+// ===== HELPERS =====
+const fmt$=v=>'$'+Number(v).toLocaleString('en-US',{minimumFractionDigits:v%1?2:0,maximumFractionDigits:2});
+const fmtDate=d=>{if(!d)return '—';const p=d.split('-');return new Date(p[0],p[1]-1,p[2]).toLocaleDateString('en-US',{month:'short',day:'numeric',year:'numeric'})};
+const initials=n=>{const p=n.split(' ');return p.length>1?(p[0][0]+p[p.length-1][0]).toUpperCase():n.substring(0,2).toUpperCase()};
+const stageColors={Lead:'#64748B',Qualified:'#06B6D4',Proposal:'#F59E0B',Negotiation:'#F97316',Won:'#10B981',Lost:'#EF4444'};
+const typeColors={Ripple:'#06B6D4',Current:'#F97316',Surge:'#8B5CF6'};
+const typeEmoji={Ripple:'🌊',Current:'⚡',Surge:'🚀'};
+const actTypeColors={WhatsApp:'#10B981',Email:'#3B82F6',Call:'#06B6D4',Meeting:'#8B5CF6',Note:'#64748B'};
+const taskTypeIcons={FirstContact:'user-plus',ProposalFollowUp:'file-text',NegotiationFollowUp:'handshake',ManagerReview:'shield'};
+const taskTypeColors={FirstContact:'#06B6D4',ProposalFollowUp:'#F59E0B',NegotiationFollowUp:'#F97316',ManagerReview:'#8B5CF6'};
+const statusColors={active:'#10B981',onboarded:'#3B82F6',invited:'#F59E0B',inactive:'#EF4444',trial:'#8B5CF6'};
+const lookup=(arr,id)=>arr.find(x=>x.id===id);
+const contactDeals=cid=>DB.deals.filter(d=>d.contact_id===cid);
+const contactActivities=cid=>DB.activities.filter(a=>a.contact_id===cid);
+const contactTasks=cid=>DB.tasks.filter(t=>t.contact_id===cid);
+const openDeals=()=>scopedDeals().filter(d=>!['Won','Lost'].includes(d.stage));
+const pipelineValue=()=>openDeals().reduce((s,d)=>s+d.value,0);
+const wonThisMonth=()=>scopedDeals().filter(d=>d.stage==='Won'&&d.updated_at.startsWith('2026-07'));
+const wonValue=()=>wonThisMonth().reduce((s,d)=>s+d.value,0);
+const stages=['Lead','Qualified','Proposal','Negotiation','Won','Lost'];
+
+const NAV_ITEMS=[
+{page:'dashboard',icon:'layout-dashboard',label:'Dashboard'},
+{page:'contacts',icon:'users',label:'Contacts'},
+{page:'deals',icon:'briefcase',label:'Deals'},
+{page:'activities',icon:'clipboard-list',label:'Activities'},
+{page:'calendar',icon:'calendar',label:'Calendar'},
+{page:'email',icon:'mail',label:'Email'},
+{page:'whatsapp',icon:'message-circle',label:'WhatsApp'},
+{type:'label',label:'REPORTS & ADMIN'},
+{page:'automations',icon:'repeat',label:'Automations'},
+{page:'reports',icon:'bar-chart-3',label:'Reports'},
+{page:'org-setup',icon:'building-2',label:'Org Setup',managerOnly:true},
+{page:'settings',icon:'settings',label:'Settings'},
+{page:'billing',icon:'credit-card',label:'Billing',managerOnly:true},
+{page:'super-admin',icon:'shield',label:'Super Admin',managerOnly:true}
+];
+
+function getPageTitle(p){const m={'dashboard':'Dashboard','contacts':'Contacts','deals':'Deals & Pipeline','activities':'Activities & Tasks','calendar':'Calendar','email':'Email','whatsapp':'WhatsApp','automations':'Automations','reports':'Reports','org-setup':'Org Setup','settings':'Settings','billing':'Billing','super-admin':'Super Admin','agent-dashboard':'My Dashboard','commissions':'Commissions'};return m[p]||'Dashboard'}
+
+// ===== RENDER ENGINE =====
+function renderPage(page){
+switch(page){
+case 'dashboard':return renderDashboard();
+case 'contacts':return renderContacts();
+case 'deals':return renderDeals();
+case 'activities':return renderActivities();
+case 'calendar':return renderCalendar();
+case 'email':return renderEmail();
+case 'whatsapp':return renderWhatsApp();
+case 'automations':return renderAutomations();
+case 'reports':return renderReports();
+case 'org-setup':return renderOrgSetup();
+case 'settings':return renderSettings();
+case 'billing':return renderBilling();
+case 'super-admin':return renderSuperAdmin();
+case 'agent-dashboard':return renderAgentDashboard();
+case 'commissions':return renderCommissions();
+default:return renderDashboard();
+}}
+
+function kpiCard(label,value,sub,icon,color,page){return`<div class="kpi-card" data-action="navigate" data-page="${page||'dashboard'}"><div class="kpi-stripe" style="background:${color}"></div><div style="display:flex;align-items:flex-start;justify-content:space-between"><div><div style="font-size:.65rem;font-weight:700;letter-spacing:.12em;text-transform:uppercase;color:#64748B;margin-bottom:6px">${label}</div><div class="count-anim" style="font-size:1.5rem;font-weight:800">${value}</div><div style="font-size:.75rem;color:#64748B;margin-top:4px">${sub}</div></div><i data-lucide="${icon}" style="color:${color}" class="w-5 h-5"></i></div></div>`}
+
+// ===== DASHBOARD =====
+function renderDashboard(){
+const contacts=scopedContacts();const deals=scopedDeals();
+const oc=deals.filter(d=>!['Won','Lost'].includes(d.stage)).length;
+const pv=deals.filter(d=>!['Won','Lost'].includes(d.stage)).reduce((s,d)=>s+d.value,0);
+const wm=deals.filter(d=>d.stage==='Won'&&d.updated_at.startsWith('2026-07'));
+const wv=wm.reduce((s,d)=>s+d.value,0);
+const stageCounts=stages.map(s=>({stage:s,count:deals.filter(d=>d.stage===s).length,value:deals.filter(d=>d.stage===s).reduce((x,d)=>x+d.value,0)}));
+const maxCount=Math.max(...stageCounts.map(s=>s.count),1);
+const recentContacts=[...contacts].sort((a,b)=>b.created_at.localeCompare(a.created_at)).slice(0,6);
+const myTasks=scopedTasks().filter(t=>t.status==='open');
+const recentActs=[...scopedActivities()].sort((a,b)=>b.created_at.localeCompare(a.created_at)).slice(0,5);
+const curUser=lookup(DB.agents,APP.currentAgent);
+let viewBanner='';
+if(APP.currentRole==='manager'){
+viewBanner=`
+<div style="background:linear-gradient(135deg,rgba(249,115,22,.1),rgba(6,182,212,.08));border:1px solid rgba(249,115,22,.2);border-radius:12px;padding:12px 16px;display:flex;align-items:center;gap:12px;margin-bottom:20px;flex-wrap:wrap">
+<i data-lucide="shield" class="w-5 h-5" style="color:#F97316;flex-shrink:0"></i>
+<div style="flex:1;min-width:150px"><div style="font-size:.875rem;font-weight:600;color:#F97316">Manager View</div><div style="font-size:.8rem;color:#64748B">You have full visibility into all team data and leaderboards.</div></div>
+<div style="display:flex;gap:6px;align-items:center;flex-wrap:wrap">
+<button class="pill" style="cursor:pointer;padding:4px 12px;background:${APP.dashViewAgent==='all'?'rgba(249,115,22,.2)':'rgba(30,58,82,.5)'};color:${APP.dashViewAgent==='all'?'#F97316':'#64748B'};border:1px solid ${APP.dashViewAgent==='all'?'rgba(249,115,22,.4)':'transparent'}" data-action="dash-view-agent" data-aid="all">All Team</button>
+${DB.agents.filter(a=>!a.is_manager).map(a=>`<div style="width:28px;height:28px;border-radius:50%;background:${a.color};display:flex;align-items:center;justify-content:center;font-size:.55rem;font-weight:800;cursor:pointer;border:2px solid ${APP.dashViewAgent===a.id?'white':'transparent'};transition:border .15s" data-action="dash-view-agent" data-aid="${a.id}" title="${a.name}">${a.avatar}</div>`).join('')}
+</div></div>`;
+} else if(APP.currentRole==='agent_admin'){
+viewBanner=`
+<div style="background:linear-gradient(135deg,rgba(245,158,11,.1),rgba(6,182,212,.08));border:1px solid rgba(245,158,11,.2);border-radius:12px;padding:12px 16px;display:flex;align-items:center;gap:12px;margin-bottom:20px;flex-wrap:wrap">
+<i data-lucide="shield" class="w-5 h-5" style="color:#F59E0B;flex-shrink:0"></i>
+<div style="flex:1;min-width:150px"><div style="font-size:.875rem;font-weight:600;color:#F59E0B">Agent/Admin View</div><div style="font-size:.8rem;color:#64748B">Full team data visible.</div></div>
+<div style="display:flex;gap:6px;align-items:center;flex-wrap:wrap">
+<button class="pill" style="cursor:pointer;padding:4px 12px;background:${APP.dashViewAgent==='all'?'rgba(245,158,11,.2)':'rgba(30,58,82,.5)'};color:${APP.dashViewAgent==='all'?'#F59E0B':'#64748B'};border:1px solid ${APP.dashViewAgent==='all'?'rgba(245,158,11,.4)':'transparent'}" data-action="dash-view-agent" data-aid="all">All Team</button>
+${DB.agents.filter(a=>!a.is_manager).map(a=>`<div style="width:28px;height:28px;border-radius:50%;background:${a.color};display:flex;align-items:center;justify-content:center;font-size:.55rem;font-weight:800;cursor:pointer;border:2px solid ${APP.dashViewAgent===a.id?'white':'transparent'};transition:border .15s" data-action="dash-view-agent" data-aid="${a.id}" title="${a.name}">${a.avatar}</div>`).join('')}
+</div></div>`;
+}
+return`<div class="fade-up" style="max-width:1100px;margin:0 auto">
+<div class="eyebrow mb-1">OVERVIEW — JULY 2026</div>
+<h1 style="font-size:1.6rem;font-weight:800;margin-bottom:4px">Sales Dashboard</h1>
+<p style="color:#64748B;font-size:.9rem;margin-bottom:20px">Good evening, ${curUser?curUser.name.split(' ')[0]:'Andrea'} 👋 &nbsp;·&nbsp; Monday, July 20, 2026</p>
+${viewBanner}
+<div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 mb-6">
+${kpiCard('Total Contacts',contacts.length,'In database','users','#06B6D4','contacts')}
+${kpiCard('Open Deals',oc,fmt$(pv)+' pipeline','briefcase','#F97316','deals')}
+${kpiCard('Pipeline Value',fmt$(pv),oc+' deals in progress','trending-up','#8B5CF6','deals')}
+${kpiCard('Deals Won — July',wm.length,fmt$(wv)+' revenue','check-circle','#10B981','deals')}
+</div>
+<div class="card-dark p-5 mb-6">
+<div class="eyebrow mb-4">PIPELINE STAGES</div>
+${stageCounts.map(s=>`<div style="display:flex;align-items:center;gap:12px;margin-bottom:10px;cursor:pointer" data-action="filter-stage" data-stage="${s.stage}">
+<span style="width:90px;font-size:.78rem;font-weight:600;color:${stageColors[s.stage]}">${s.stage}</span>
+<div style="flex:1;background:#1E3A52;border-radius:999px;height:8px;overflow:hidden"><div style="width:${Math.max((s.count/maxCount)*100,4)}%;background:${stageColors[s.stage]};height:100%;border-radius:999px;transition:width .4s"></div></div>
+<span style="font-size:.78rem;font-weight:700;color:white;min-width:30px;text-align:right">${s.count}</span>
+<span style="font-size:.72rem;color:#64748B;min-width:70px;text-align:right">${fmt$(s.value)}</span>
+</div>`).join('')}
+</div>
+<div class="grid grid-cols-1 lg:grid-cols-5 gap-4 mb-6">
+<div class="card-dark p-4 lg:col-span-3">
+<div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:12px"><span class="eyebrow">RECENT CONTACTS</span><span style="font-size:.78rem;color:#F97316;cursor:pointer;font-weight:600" data-action="navigate" data-page="contacts">View All →</span></div>
+${recentContacts.map(c=>`<div style="display:flex;align-items:center;gap:10px;padding:8px 4px;border-radius:8px;cursor:pointer;transition:background .15s" class="hover:bg-white/[.03]" data-action="open-contact" data-id="${c.id}">
+<div style="width:34px;height:34px;border-radius:50%;background:${lookup(DB.agents,c.assigned_agent)?.color||'#1E3A52'};display:flex;align-items:center;justify-content:center;font-size:.65rem;font-weight:800;flex-shrink:0">${initials(c.name)}</div>
+<div style="flex:1;min-width:0"><div style="font-size:.85rem;font-weight:600;white-space:nowrap;overflow:hidden;text-overflow:ellipsis">${c.name}</div><div style="font-size:.72rem;color:#64748B">${c.business}</div></div>
+<span class="pill" style="background:rgba(6,182,212,.1);color:#06B6D4;font-size:.65rem">${c.island}</span>
+${c.is_crm_client?'<span class="pill" style="background:rgba(16,185,129,.12);color:#10B981;font-size:.62rem">CRM</span>':''}
+</div>`).join('')}
+</div>
+<div class="card-dark p-4 lg:col-span-2">
+<div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:12px"><span class="eyebrow">OPEN TASKS</span><span class="pill" style="background:rgba(249,115,22,.15);color:#F97316">${myTasks.length}</span></div>
+${myTasks.length?myTasks.map(t=>{const c=lookup(DB.contacts,t.contact_id);const overdue=t.due_at<'2026-07-20';return`<div style="display:flex;align-items:center;gap:10px;padding:8px 4px;border-radius:8px" class="hover:bg-white/[.03]">
+<i data-lucide="${taskTypeIcons[t.type]||'circle'}" style="color:${taskTypeColors[t.type]||'#64748B'}" class="w-4 h-4 flex-shrink-0"></i>
+<div style="flex:1;min-width:0"><div style="font-size:.8rem;font-weight:600">${t.type.replace(/([A-Z])/g,' $1').trim()}</div><div style="font-size:.7rem;color:#64748B">${c?c.name:'—'}</div></div>
+<span style="font-size:.68rem;font-weight:700;color:${overdue?'#EF4444':'white'}">${fmtDate(t.due_at)}</span>
+<button class="btn-ghost" style="color:#10B981;font-size:.7rem;padding:4px 8px" data-action="mark-done" data-id="${t.id}">Done</button>
+</div>`}).join(''):'<div style="text-align:center;padding:20px;color:#64748B;font-size:.85rem">All caught up! 🎉</div>'}
+</div></div>
+<div class="card-dark p-4 mb-6"><div class="eyebrow mb-3">RECENT ACTIVITY</div>
+${recentActs.map(a=>{const c=lookup(DB.contacts,a.contact_id);const ag=lookup(DB.agents,a.agent_id);return`<div style="display:flex;gap:12px;padding:10px 0;border-bottom:1px solid rgba(30,58,82,.3)">
+<div style="width:3px;border-radius:999px;background:${actTypeColors[a.type]||'#64748B'};flex-shrink:0"></div>
+<div style="flex:1"><div style="display:flex;align-items:center;gap:8px;margin-bottom:3px"><span class="pill" style="background:${actTypeColors[a.type]}20;color:${actTypeColors[a.type]}">${a.type}</span><span style="font-size:.8rem;font-weight:600">${c?c.name:''}</span>${ag?`<span style="font-size:.7rem;color:#64748B">by ${ag.name}</span>`:''}</div>
+<div style="font-size:.82rem;color:#CBD5E1">${a.desc.length>80?a.desc.substring(0,80)+'…':a.desc}</div>
+<div style="font-size:.68rem;color:#64748B;margin-top:3px">${a.created_at}</div></div></div>`}).join('')}
+</div>
+</div>`}
+
+// ===== CONTACTS =====
+function renderContacts(){
+let list=[...scopedContacts()];
+if(APP.contactSearch){const q=APP.contactSearch.toLowerCase();list=list.filter(c=>(c.name+c.email+c.business).toLowerCase().includes(q))}
+if(APP.contactFilter==='crm')list=list.filter(c=>c.is_crm_client);
+if(APP.contactFilter==='prospect')list=list.filter(c=>!c.is_crm_client);
+if(APP.contactFilter!=='all'&&APP.contactFilter!=='crm'&&APP.contactFilter!=='prospect'){list=list.filter(c=>c.island===APP.contactFilter)}
+if(APP.contactSort==='newest')list.sort((a,b)=>b.created_at.localeCompare(a.created_at));
+if(APP.contactSort==='oldest')list.sort((a,b)=>a.created_at.localeCompare(b.created_at));
+if(APP.contactSort==='az')list.sort((a,b)=>a.name.localeCompare(b.name));
+if(APP.contactSort==='za')list.sort((a,b)=>b.name.localeCompare(a.name));
+const islands=[...new Set(DB.contacts.map(c=>c.island))].sort();
+return`<div class="fade-up" style="max-width:1100px;margin:0 auto">
+<div style="display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;gap:12px;margin-bottom:20px">
+<div style="display:flex;align-items:center;gap:12px"><h1 style="font-size:1.5rem;font-weight:800">Contacts</h1><span class="pill" style="background:rgba(6,182,212,.15);color:#06B6D4">${list.length}</span></div>
+<button class="btn-orange" data-action="open-modal" data-modal="add-contact"><i data-lucide="plus" class="w-4 h-4"></i>Add Contact</button>
+</div>
+<div style="display:flex;gap:10px;flex-wrap:wrap;margin-bottom:16px">
+<div style="position:relative;flex:1;min-width:200px"><input class="form-input" id="contact-search-inp" placeholder="Search name, email, business..." value="${APP.contactSearch}" style="padding-left:34px"/><i data-lucide="search" class="w-4 h-4" style="position:absolute;left:10px;top:50%;transform:translateY(-50%);color:#64748B"></i></div>
+<select class="form-input" id="contact-filter-sel" style="width:auto;min-width:140px"><option value="all"${APP.contactFilter==='all'?' selected':''}>All Contacts</option><option value="crm"${APP.contactFilter==='crm'?' selected':''}>CRM Clients</option><option value="prospect"${APP.contactFilter==='prospect'?' selected':''}>Prospects</option>${islands.map(i=>`<option value="${i}"${APP.contactFilter===i?' selected':''}>${i}</option>`).join('')}</select>
+<select class="form-input" id="contact-sort-sel" style="width:auto;min-width:120px"><option value="newest"${APP.contactSort==='newest'?' selected':''}>Newest</option><option value="oldest"${APP.contactSort==='oldest'?' selected':''}>Oldest</option><option value="az"${APP.contactSort==='az'?' selected':''}>A-Z</option><option value="za"${APP.contactSort==='za'?' selected':''}>Z-A</option></select>
+</div>
+<div class="card-dark" style="overflow-x:auto"><table style="width:100%;text-align:left;border-collapse:collapse"><thead><tr style="background:rgba(6,182,212,.08)">
+<th style="padding:12px 16px;font-size:.7rem;font-weight:700;letter-spacing:.12em;text-transform:uppercase;color:#06B6D4">Contact</th>
+<th style="padding:12px 16px;font-size:.7rem;font-weight:700;letter-spacing:.12em;text-transform:uppercase;color:#06B6D4" class="hidden md:table-cell">Island</th>
+<th style="padding:12px 16px;font-size:.7rem;font-weight:700;letter-spacing:.12em;text-transform:uppercase;color:#06B6D4">Status</th>
+<th style="padding:12px 16px;font-size:.7rem;font-weight:700;letter-spacing:.12em;text-transform:uppercase;color:#06B6D4;text-align:center">Deals</th>
+<th style="padding:12px 16px;font-size:.7rem;font-weight:700;letter-spacing:.12em;text-transform:uppercase;color:#06B6D4" class="hidden md:table-cell">Created</th>
+<th style="padding:12px 8px"></th>
+</tr></thead><tbody>
+${list.slice(0,30).map(c=>{const od=contactDeals(c.id).filter(d=>!['Won','Lost'].includes(d.stage)).length;const ag=lookup(DB.agents,c.assigned_agent);return`<tr style="border-bottom:1px solid rgba(30,58,82,.5);cursor:pointer" class="hover:bg-white/[.02]" data-action="open-contact" data-id="${c.id}">
+<td style="padding:14px 16px"><div style="display:flex;align-items:center;gap:10px"><div style="width:36px;height:36px;border-radius:50%;background:${ag?.color||'#1E3A52'};display:flex;align-items:center;justify-content:center;font-size:.65rem;font-weight:800;flex-shrink:0">${initials(c.name)}</div><div><div style="font-weight:600;font-size:.875rem">${c.name}</div><div style="font-size:.72rem;color:#64748B">${c.business}</div></div></div></td>
+<td style="padding:14px 16px" class="hidden md:table-cell"><span class="pill" style="background:rgba(6,182,212,.1);color:#06B6D4">${c.island}</span></td>
+<td style="padding:14px 16px">${c.is_crm_client?'<span class="pill" style="background:rgba(16,185,129,.12);color:#10B981">CRM Client</span>':'<span class="pill" style="background:rgba(100,116,139,.12);color:#64748B">Prospect</span>'}</td>
+<td style="padding:14px 16px;text-align:center"><span style="font-weight:700;color:${od>0?'#F97316':'#64748B'}">${od}</span></td>
+<td style="padding:14px 16px;font-size:.78rem;color:#64748B" class="hidden md:table-cell">${fmtDate(c.created_at)}</td>
+<td style="padding:14px 8px"><button class="btn-ghost" data-action="quick-deal" data-cid="${c.id}" title="Add Deal"><i data-lucide="plus-circle" class="w-4 h-4"></i></button></td>
+</tr>`}).join('')}
+</tbody></table></div>
+${list.length>30?`<div style="text-align:center;padding:16px;font-size:.82rem;color:#64748B">Showing 30 of ${list.length} contacts</div>`:''}
+</div>`}
+
+// ===== DEALS =====
+function renderDeals(){
+let list=[...scopedDeals()];
+if(APP.dealsFilter!=='all')list=list.filter(d=>d.stage===APP.dealsFilter);
+if(APP.dealsAgentFilter!=='all')list=list.filter(d=>d.agent_id===APP.dealsAgentFilter);
+if(APP.dealsTypeFilter!=='all')list=list.filter(d=>d.type===APP.dealsTypeFilter);
+const activeAgents=DB.agents.filter(a=>!a.is_manager);
+return`<div class="fade-up" style="max-width:1100px;margin:0 auto">
+<div style="display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;gap:12px;margin-bottom:16px">
+<h1 style="font-size:1.5rem;font-weight:800">Deals & Pipeline</h1>
+<div style="display:flex;gap:8px;align-items:center">
+<button class="btn-orange" data-action="open-modal" data-modal="add-deal"><i data-lucide="plus" class="w-4 h-4"></i>New Deal</button>
+<div style="display:flex;background:#102236;border:1px solid #1E3A52;border-radius:8px;overflow:hidden">
+<button class="btn-ghost" style="${APP.dealsView==='kanban'?'background:rgba(249,115,22,.15);color:#F97316':''}" data-action="deals-view" data-view="kanban"><i data-lucide="columns-3" class="w-4 h-4"></i></button>
+<button class="btn-ghost" style="${APP.dealsView==='list'?'background:rgba(249,115,22,.15);color:#F97316':''}" data-action="deals-view" data-view="list"><i data-lucide="list" class="w-4 h-4"></i></button>
+</div></div></div>
+<div style="display:flex;gap:8px;flex-wrap:wrap;margin-bottom:16px;align-items:center">
+<div style="display:flex;gap:4px;flex-wrap:wrap">${['all',...stages].map(s=>`<button class="tab-btn${APP.dealsFilter===s?' active':''}" data-action="deals-filter" data-stage="${s}">${s==='all'?'All':s}</button>`).join('')}</div>
+${APP.currentRole==='manager'||APP.currentRole==='agent_admin'?`<select class="form-input" id="deals-agent-sel" style="width:auto;min-width:130px"><option value="all">All Agents</option>${activeAgents.map(a=>`<option value="${a.id}"${APP.dealsAgentFilter===a.id?' selected':''}>${a.name}</option>`).join('')}</select>`:''}
+<select class="form-input" id="deals-type-sel" style="width:auto;min-width:120px"><option value="all">All Types</option><option value="Ripple"${APP.dealsTypeFilter==='Ripple'?' selected':''}>Ripple</option><option value="Current"${APP.dealsTypeFilter==='Current'?' selected':''}>Current</option><option value="Surge"${APP.dealsTypeFilter==='Surge'?' selected':''}>Surge</option></select>
+</div>
+${APP.dealsView==='kanban'?renderKanban(list):renderDealsList(list)}
+</div>`}
+
+function renderKanban(allDeals){
+return`<div style="display:flex;gap:14px;overflow-x:auto;padding-bottom:16px;min-height:400px">
+${stages.map(s=>{const deals=(APP.dealsFilter==='all'||APP.dealsFilter===s)?allDeals.filter(d=>d.stage===s):[];const sv=deals.reduce((x,d)=>x+d.value,0);
+return`<div style="background:rgba(255,255,255,.02);border:1px solid #1E3A52;border-radius:14px;min-width:200px;width:200px;flex-shrink:0;display:flex;flex-direction:column">
+<div style="padding:14px;border-bottom:1px solid #1E3A52;position:relative"><div style="position:absolute;top:0;left:0;right:0;height:3px;background:${stageColors[s]};border-radius:14px 14px 0 0"></div>
+<div style="display:flex;align-items:center;justify-content:space-between"><span style="font-weight:700;font-size:.85rem">${s}</span><span class="pill" style="background:${stageColors[s]}20;color:${stageColors[s]}">${deals.length}</span></div>
+<div style="font-size:.72rem;color:#64748B;margin-top:2px">${fmt$(sv)}</div></div>
+<div style="flex:1;padding:8px;overflow-y:auto;display:flex;flex-direction:column;gap:8px">
+${deals.map(d=>{const c=lookup(DB.contacts,d.contact_id);const ag=lookup(DB.agents,d.agent_id);return`<div class="deal-card" data-action="open-deal" data-id="${d.id}">
+<div style="display:flex;align-items:center;gap:6px;margin-bottom:6px"><span class="pill" style="background:${typeColors[d.type]}20;color:${typeColors[d.type]}">${typeEmoji[d.type]} ${d.type}</span>${d.is_crm_deal?'<span class="pill" style="background:rgba(16,185,129,.12);color:#10B981;font-size:.58rem">CRM</span>':''}</div>
+<div style="font-weight:600;font-size:.82rem;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;margin-bottom:2px">${d.name}</div>
+<div style="font-size:.72rem;color:#64748B;margin-bottom:6px">${c?c.name:''}</div>
+<div style="font-weight:700;color:#10B981;font-size:.9rem;margin-bottom:6px">${fmt$(d.value)}</div>
+${ag?`<div style="display:flex;align-items:center;gap:6px;margin-bottom:8px"><div style="width:18px;height:18px;border-radius:50%;background:${ag.color||'#1E3A52'};display:flex;align-items:center;justify-content:center;font-size:.5rem;font-weight:800">${ag.avatar}</div><span style="font-size:.68rem;color:#64748B">${ag.name}</span></div>`:''}
+<select class="form-input" data-action="stage-change" data-deal-id="${d.id}" style="font-size:.72rem;padding:4px 8px;color:#06B6D4;background:#0D1B2A">
+${stages.map(st=>`<option value="${st}"${d.stage===st?' selected':''}>${st}</option>`).join('')}</select>
+</div>`}).join('')}
+</div></div>`}).join('')}</div>`}
+
+function renderDealsList(list){
+return`<div class="card-dark" style="overflow-x:auto"><table style="width:100%;text-align:left;border-collapse:collapse"><thead><tr style="background:rgba(6,182,212,.08)">
+<th style="padding:12px 16px;font-size:.7rem;font-weight:700;letter-spacing:.12em;text-transform:uppercase;color:#06B6D4">Deal</th>
+<th style="padding:12px 16px;font-size:.7rem;font-weight:700;letter-spacing:.12em;text-transform:uppercase;color:#06B6D4">Type</th>
+<th style="padding:12px 16px;font-size:.7rem;font-weight:700;letter-spacing:.12em;text-transform:uppercase;color:#06B6D4">Value</th>
+<th style="padding:12px 16px;font-size:.7rem;font-weight:700;letter-spacing:.12em;text-transform:uppercase;color:#06B6D4">Stage</th>
+<th style="padding:12px 16px;font-size:.7rem;font-weight:700;letter-spacing:.12em;text-transform:uppercase;color:#06B6D4" class="hidden md:table-cell">Agent</th>
+<th style="padding:12px 16px;font-size:.7rem;font-weight:700;letter-spacing:.12em;text-transform:uppercase;color:#06B6D4">Move</th>
+</tr></thead><tbody>
+${list.map(d=>{const c=lookup(DB.contacts,d.contact_id);const ag=lookup(DB.agents,d.agent_id);return`<tr style="border-bottom:1px solid rgba(30,58,82,.5)" class="hover:bg-white/[.02]">
+<td style="padding:12px 16px"><div style="font-weight:600;font-size:.85rem">${d.name}</div><div style="font-size:.72rem;color:#64748B">${c?c.name:''}</div></td>
+<td style="padding:12px 16px"><span class="pill" style="background:${typeColors[d.type]}20;color:${typeColors[d.type]}">${typeEmoji[d.type]} ${d.type}</span></td>
+<td style="padding:12px 16px;font-weight:700;color:#10B981">${fmt$(d.value)}</td>
+<td style="padding:12px 16px"><span class="stage-badge" style="background:${stageColors[d.stage]}20;color:${stageColors[d.stage]}">${d.stage}</span></td>
+<td style="padding:12px 16px;font-size:.82rem;color:#CBD5E1" class="hidden md:table-cell">${ag?ag.name:''}</td>
+<td style="padding:12px 16px"><select class="form-input" data-action="stage-change" data-deal-id="${d.id}" style="font-size:.72rem;padding:4px 8px;color:#06B6D4;width:auto;min-width:100px">
+${stages.map(st=>`<option value="${st}"${d.stage===st?' selected':''}>${st}</option>`).join('')}</select></td>
+</tr>`}).join('')}</tbody></table></div>`}
+
+// ===== ACTIVITIES =====
+function renderActivities(){
+const tabs=['all','tasks','log'];
+let acts=[...scopedActivities()].sort((a,b)=>b.created_at.localeCompare(a.created_at));
+if(APP.activitiesTypeFilter!=='all')acts=acts.filter(a=>a.type===APP.activitiesTypeFilter);
+const openTasks=scopedTasks().filter(t=>t.status==='open').sort((a,b)=>a.due_at.localeCompare(b.due_at));
+const doneTasks=scopedTasks().filter(t=>t.status==='done');
+return`<div class="fade-up" style="max-width:1100px;margin:0 auto">
+<h1 style="font-size:1.5rem;font-weight:800;margin-bottom:16px">Activities & Tasks</h1>
+<div style="display:flex;gap:8px;margin-bottom:20px">${tabs.map(t=>`<button class="tab-btn${APP.activitiesTab===t?' active':''}" data-action="activities-tab" data-tab="${t}">${t==='all'?'All Activities':t==='tasks'?'Tasks':'Log New'}</button>`).join('')}</div>
+${APP.activitiesTab==='all'?`
+<div style="display:flex;gap:6px;flex-wrap:wrap;margin-bottom:16px">${['all','WhatsApp','Email','Call','Meeting','Note'].map(t=>`<button class="tab-btn${APP.activitiesTypeFilter===t?' active':''}" data-action="act-type-filter" data-type="${t}">${t==='all'?'All':t}</button>`).join('')}</div>
+<div class="card-dark p-4">${acts.map(a=>{const c=lookup(DB.contacts,a.contact_id);const ag=lookup(DB.agents,a.agent_id);return`<div style="display:flex;gap:12px;padding:12px 0;border-bottom:1px solid rgba(30,58,82,.3)">
+<div style="width:3px;border-radius:999px;background:${actTypeColors[a.type]||'#64748B'};flex-shrink:0"></div>
+<div style="flex:1"><div style="display:flex;align-items:center;gap:8px;flex-wrap:wrap;margin-bottom:4px">
+<span class="pill" style="background:${actTypeColors[a.type]}20;color:${actTypeColors[a.type]}">${a.type}</span>
+<span style="font-size:.82rem;font-weight:600;cursor:pointer" data-action="open-contact" data-id="${a.contact_id}">${c?c.name:''}</span>
+${ag?`<span style="font-size:.7rem;color:#64748B">by ${ag.name}</span>`:''}</div>
+<div style="font-size:.82rem;color:#CBD5E1">${a.desc}</div>
+<div style="font-size:.68rem;color:#64748B;margin-top:4px">${a.created_at}</div></div></div>`}).join('')}</div>`
+:APP.activitiesTab==='tasks'?`
+<div class="card-dark p-4 mb-4"><div class="eyebrow mb-3">OPEN TASKS <span class="pill" style="background:rgba(249,115,22,.15);color:#F97316;margin-left:8px">${openTasks.length}</span></div>
+${openTasks.map(t=>{const c=lookup(DB.contacts,t.contact_id);const overdue=t.due_at<'2026-07-20';return`<div style="display:flex;align-items:center;gap:12px;padding:10px 4px;border-bottom:1px solid rgba(30,58,82,.3);border-left:3px solid ${taskTypeColors[t.type]||'#64748B'};padding-left:12px">
+<i data-lucide="${taskTypeIcons[t.type]||'circle'}" style="color:${taskTypeColors[t.type]||'#64748B'}" class="w-4 h-4 flex-shrink-0"></i>
+<div style="flex:1;min-width:0"><div style="font-size:.85rem;font-weight:600">${t.type.replace(/([A-Z])/g,' $1').trim()}</div><div style="font-size:.72rem;color:#64748B">${c?c.name:'—'}</div></div>
+<span style="font-size:.75rem;font-weight:700;color:${overdue?'#EF4444':'white'}">${fmtDate(t.due_at)}</span>
+<button class="btn-ghost" style="color:#10B981;font-size:.75rem" data-action="mark-done" data-id="${t.id}">✓ Done</button></div>`}).join('')}</div>
+<div class="card-dark p-4"><div class="eyebrow mb-3" style="color:#64748B">COMPLETED</div>
+${doneTasks.length?doneTasks.map(t=>{const c=lookup(DB.contacts,t.contact_id);return`<div style="display:flex;align-items:center;gap:12px;padding:8px 4px;opacity:.5"><i data-lucide="check-circle" class="w-4 h-4 flex-shrink-0" style="color:#10B981"></i><div style="flex:1"><span style="font-size:.82rem">${t.type.replace(/([A-Z])/g,' $1').trim()}</span> <span style="font-size:.72rem;color:#64748B">${c?c.name:''}</span></div></div>`}).join(''):'<div style="padding:12px;color:#64748B;font-size:.82rem">No completed tasks</div>'}</div>`
+:`<div class="card-dark p-5" style="max-width:600px">
+<div class="eyebrow mb-4">LOG NEW ACTIVITY</div>
+<div style="margin-bottom:14px"><label class="form-label">Type</label><div style="display:flex;gap:6px;flex-wrap:wrap" id="log-type-btns">${['WhatsApp','Email','Call','Meeting','Note'].map((t,i)=>`<button class="tab-btn${i===0?' active':''}" data-logtype="${t}">${t}</button>`).join('')}</div></div>
+<div style="margin-bottom:14px"><label class="form-label">Contact</label><select class="form-input" id="log-contact-sel"><option value="">Select contact...</option>${scopedContacts().map(c=>`<option value="${c.id}">${c.name} — ${c.business}</option>`).join('')}</select></div>
+<div style="margin-bottom:14px"><label class="form-label">Description</label><textarea class="form-input" id="log-desc-txt" rows="3" placeholder="What happened?"></textarea></div>
+<button class="btn-orange" data-action="submit-activity">Log Activity</button></div>`}
+</div>`}
+
+// ===== CALENDAR =====
+function renderCalendar(){
+const yr=APP.calYear;const mo=APP.calMonth;
+const monthNames=['January','February','March','April','May','June','July','August','September','October','November','December'];
+const firstDay=new Date(yr,mo,1).getDay();const daysInMonth=new Date(yr,mo+1,0).getDate();
+const prevDays=new Date(yr,mo,0).getDate();
+const cells=[];
+for(let i=firstDay-1;i>=0;i--)cells.push({day:prevDays-i,current:false});
+for(let i=1;i<=daysInMonth;i++)cells.push({day:i,current:true});
+const rem=7-cells.length%7;if(rem<7)for(let i=1;i<=rem;i++)cells.push({day:i,current:false});
+const tasksOnDay=(d)=>scopedTasks().filter(t=>{const p=t.due_at.split('-');return parseInt(p[1])===mo+1&&parseInt(p[2])===d&&t.status==='open'});
+const dealsOnDay=(d)=>scopedDeals().filter(dl=>{const p=dl.updated_at.split('-');return parseInt(p[1])===mo+1&&parseInt(p[2])===d});
+return`<div class="fade-up" style="max-width:1100px;margin:0 auto">
+<div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:20px">
+<div style="display:flex;align-items:center;gap:12px"><button class="btn-ghost" data-action="cal-prev"><i data-lucide="chevron-left" class="w-4 h-4"></i></button><h1 style="font-size:1.5rem;font-weight:800">${monthNames[mo]} ${yr}</h1><button class="btn-ghost" data-action="cal-next"><i data-lucide="chevron-right" class="w-4 h-4"></i></button></div>
+<button class="btn-orange" data-action="coming-soon"><i data-lucide="plus" class="w-4 h-4"></i>Add Event</button>
+</div>
+<div style="display:grid;grid-template-columns:repeat(7,1fr);gap:4px;margin-bottom:8px">${['Sun','Mon','Tue','Wed','Thu','Fri','Sat'].map(d=>`<div style="text-align:center;font-size:.7rem;font-weight:700;color:#64748B;padding:6px">${d}</div>`).join('')}</div>
+<div style="display:grid;grid-template-columns:repeat(7,1fr);gap:4px;margin-bottom:20px">
+${cells.map(c=>{const isToday=c.current&&c.day===20&&mo===6&&yr===2026;
+const dayTasks=c.current?tasksOnDay(c.day):[];
+const dayDeals=c.current?dealsOnDay(c.day):[];
+return`<div class="cal-cell${isToday?' today':''}${!c.current?' other-month':''}">
+<div style="font-weight:${isToday?'800':'600'};font-size:.78rem;color:${isToday?'#F97316':c.current?'white':'#64748B'};margin-bottom:4px">${c.day}</div>
+${dayTasks.slice(0,2).map(t=>{const ct=lookup(DB.contacts,t.contact_id);return`<div style="background:${taskTypeColors[t.type]||'#1E3A52'}20;color:${taskTypeColors[t.type]||'#64748B'};padding:1px 4px;border-radius:4px;font-size:.6rem;margin-bottom:2px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis">${ct?ct.name.split(' ')[0]:t.type}</div>`}).join('')}
+${dayDeals.filter(d=>d.stage==='Won').length?`<div style="width:6px;height:6px;border-radius:50%;background:#10B981;margin-top:2px"></div>`:''}
+</div>`}).join('')}
+</div>
+<div class="card-dark p-4"><div class="eyebrow mb-3">UPCOMING TASKS</div>
+${scopedTasks().filter(t=>t.status==='open').sort((a,b)=>a.due_at.localeCompare(b.due_at)).slice(0,5).map(t=>{const c=lookup(DB.contacts,t.contact_id);return`<div style="display:flex;align-items:center;gap:10px;padding:8px 4px;border-bottom:1px solid rgba(30,58,82,.3)"><i data-lucide="${taskTypeIcons[t.type]||'circle'}" style="color:${taskTypeColors[t.type]||'#64748B'}" class="w-4 h-4"></i><div style="flex:1"><span style="font-size:.82rem;font-weight:600">${t.type.replace(/([A-Z])/g,' $1').trim()}</span> <span style="font-size:.72rem;color:#64748B">${c?c.name:''}</span></div><span style="font-size:.72rem;color:#64748B">${fmtDate(t.due_at)}</span></div>`}).join('')}
+</div>
+</div>`}
+
+// ===== EMAIL =====
+function renderEmail(){
+const emails=[
+{id:0,from:'Sonia Clarke',subject:'Re: Current Package — Pricing Request',preview:'Hi, thanks for the call yesterday. Could you send over the pricing breakdown for the Current package?',time:'Jul 18, 2:30 PM',unread:true,body:'Hi,\n\nThanks for the call yesterday. Could you send over the pricing breakdown for the Current package? We are very interested and would like to present it to our board next week.\n\nBest regards,\nSonia Clarke\nCaribbean Health Partners'},
+{id:1,from:'Fabian Augustin',subject:'BlueWater Marina — Meeting Confirmation',preview:'Confirming our meeting for Thursday at 10 AM at the marina office.',time:'Jul 17, 9:15 AM',unread:true,body:'Hi Kurly,\n\nConfirming our meeting for Thursday at 10 AM at the marina office. Looking forward to discussing the Surge package in detail.\n\nCheers,\nFabian Augustin\nBlueWater Marina'},
+{id:2,from:'Marcia Thompson',subject:'Thompson Insurance — Contract Signed ✅',preview:'Please find attached the signed contract for the Ripple package.',time:'Jul 12, 11:30 AM',unread:false,body:'Dear Tyan,\n\nPlease find attached the signed contract for the Ripple package. We are excited to get started with BluWav Growth.\n\nKind regards,\nMarcia Thompson\nThompson Insurance'},
+{id:3,from:'Andrea M. Tanguay',subject:'Team Update — July Pipeline Review',preview:'Great work team! Our pipeline is looking strong heading into the second half of July.',time:'Jul 15, 4:00 PM',unread:true,body:'Team,\n\nGreat work everyone! Our pipeline is looking strong heading into the second half of July. Keep pushing on those proposals.\n\nLet\'s sync on Monday to review progress.\n\n— Andrea'},
+{id:4,from:'Kezia Fairweather',subject:'Bright Ideas Agency — Interested in Current',preview:'We received your intro email and would like to schedule a discovery call.',time:'Jul 11, 3:45 PM',unread:false,body:'Hi Carolina,\n\nWe received your intro email and would like to schedule a discovery call this week if possible. We\'re particularly interested in the Current package.\n\nBest,\nKezia Fairweather\nBright Ideas Agency'},
+{id:5,from:'BluWav System',subject:'Weekly Performance Report — Week 28',preview:'Your weekly performance summary is ready. 3 deals in pipeline, 0 won this week.',time:'Jul 14, 8:00 AM',unread:false,body:'Weekly Performance Report\n\nDeals in Pipeline: 3\nDeals Won This Week: 0\nNew Contacts: 5\nActivities Logged: 8\n\nKeep up the great work!'}
+];
+const sel=APP.selectedEmailIdx;const e=emails[sel];
+return`<div class="fade-up" style="max-width:1100px;margin:0 auto">
+<h1 style="font-size:1.5rem;font-weight:800;margin-bottom:16px">Email</h1>
+<div style="display:flex;gap:16px;min-height:500px">
+<div style="width:340px;flex-shrink:0" class="hidden md:block">
+<button class="btn-orange mb-3" style="width:100%;justify-content:center" data-action="coming-soon"><i data-lucide="pen-square" class="w-4 h-4"></i>Compose</button>
+<div class="card-dark" style="margin-bottom:12px">
+${['Inbox','Sent','Drafts','Starred'].map((f,i)=>`<div class="nav-item" style="margin:0;border-radius:0;${i===0?'color:#F97316;font-weight:700':''}"><i data-lucide="${['inbox','send','file-text','star'][i]}" class="w-4 h-4"></i>${f}${i===0?'<span class="pill" style="background:rgba(249,115,22,.15);color:#F97316;margin-left:auto">3</span>':''}</div>`).join('')}
+</div>
+<div class="card-dark">
+${emails.map((em,i)=>`<div class="email-item${em.unread?' unread':''}${i===sel?' active-email':''}" data-action="select-email" data-idx="${i}">
+<div class="email-sender" style="font-size:.82rem;color:#CBD5E1;margin-bottom:2px">${em.from}</div>
+<div style="font-size:.78rem;font-weight:600;margin-bottom:2px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis">${em.subject}</div>
+<div style="font-size:.7rem;color:#64748B;white-space:nowrap;overflow:hidden;text-overflow:ellipsis">${em.preview}</div>
+<div style="font-size:.65rem;color:#64748B;margin-top:4px">${em.time}</div>
+</div>`).join('')}
+</div></div>
+<div class="card-dark p-5" style="flex:1">
+<div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:16px;padding-bottom:12px;border-bottom:1px solid #1E3A52">
+<div><div style="font-size:1rem;font-weight:700;margin-bottom:4px">${e.subject}</div><div style="font-size:.82rem;color:#64748B">From: ${e.from} · ${e.time}</div></div>
+<div style="display:flex;gap:6px"><button class="btn-outline" style="padding:6px 12px;font-size:.75rem" data-action="coming-soon"><i data-lucide="reply" class="w-3 h-3"></i>Reply</button><button class="btn-ghost" style="font-size:.75rem" data-action="coming-soon"><i data-lucide="forward" class="w-3 h-3"></i>Forward</button></div>
+</div>
+<div style="font-size:.9rem;line-height:1.7;color:#CBD5E1;white-space:pre-wrap">${e.body}</div>
+</div></div>
+</div>`}
+
+// ===== WHATSAPP =====
+function renderWhatsApp(){
+const chats=[
+{contactId:'c7',lastMsg:'Thanks for the call! Will review the proposal.',time:'Jul 7',msgs:[{from:'contact',text:'Hi, I saw the BluWav ad. What packages do you offer?',time:'Jul 5 9:00'},{from:'agent',text:'Hi Sonia! We have Ripple, Current and Surge packages. The Current is our most popular at $3,000.',time:'Jul 5 9:15'},{from:'contact',text:'Sounds interesting. Can we schedule a call?',time:'Jul 5 10:00'},{from:'agent',text:'Absolutely! How about Thursday at 2 PM?',time:'Jul 5 10:10'},{from:'contact',text:'Perfect, talk then!',time:'Jul 5 10:12'},{from:'contact',text:'Thanks for the call! Will review the proposal.',time:'Jul 7 14:30'}]},
+{contactId:'c14',lastMsg:'Meeting confirmed for Thursday 10 AM.',time:'Jul 9',msgs:[{from:'agent',text:'Hi Fabian! Great meeting at the marina. The Surge package would be perfect for your expansion.',time:'Jul 9 10:00'},{from:'contact',text:'I agree. Let me discuss with my partner.',time:'Jul 9 11:00'},{from:'agent',text:'No rush! Let me know if you have any questions.',time:'Jul 9 11:05'},{from:'contact',text:'Meeting confirmed for Thursday 10 AM.',time:'Jul 9 14:00'}]},
+{contactId:'c27',lastMsg:'Deal signed! 🎉 Welcome to BluWav.',time:'Jul 12',msgs:[{from:'agent',text:'Hi Marcia! Your Ripple package proposal is ready.',time:'Jul 10 9:00'},{from:'contact',text:'Looks great! Where do I sign?',time:'Jul 10 14:00'},{from:'agent',text:'I\'ll send the contract right away.',time:'Jul 10 14:05'},{from:'contact',text:'Signed and sent back!',time:'Jul 12 11:00'},{from:'agent',text:'Deal signed! 🎉 Welcome to BluWav.',time:'Jul 12 11:15'}]},
+{contactId:'c10',lastMsg:'CRM Premium account is now active. Welcome!',time:'Jul 15',msgs:[{from:'agent',text:'Hi Marco! Your CRM Premium trial is starting today.',time:'Jul 15 10:00'},{from:'contact',text:'Wonderful! How do I log in?',time:'Jul 15 10:30'},{from:'agent',text:'I\'ll send you the login details now. Check your email!',time:'Jul 15 10:35'},{from:'agent',text:'CRM Premium account is now active. Welcome!',time:'Jul 15 10:40'}]},
+{contactId:'c9',lastMsg:'Looking forward to your response!',time:'Jul 10',msgs:[{from:'agent',text:'Hi Kezia! I\'m Carolina from BluWav Growth. We help Caribbean businesses grow with our digital packages.',time:'Jul 10 8:30'},{from:'agent',text:'Looking forward to your response!',time:'Jul 10 8:35'}]}
+];
+const sel=APP.selectedChatIdx;const chat=chats[sel];const contact=lookup(DB.contacts,chat.contactId);
+const allMsgs=[...(chat.msgs||[]),...(APP.waMessages[chat.contactId]||[])];
+return`<div class="fade-up" style="max-width:1100px;margin:0 auto">
+<h1 style="font-size:1.5rem;font-weight:800;margin-bottom:16px">WhatsApp</h1>
+<div style="display:flex;gap:0;min-height:500px;border:1px solid #1E3A52;border-radius:14px;overflow:hidden">
+<div style="width:280px;flex-shrink:0;border-right:1px solid #1E3A52;background:#0D1B2A" class="hidden md:block">
+${chats.map((ch,i)=>{const ct=lookup(DB.contacts,ch.contactId);return`<div style="padding:12px 16px;border-bottom:1px solid rgba(30,58,82,.5);cursor:pointer;display:flex;gap:10px;${i===sel?'background:rgba(249,115,22,.06);border-left:3px solid #F97316':''}" data-action="select-chat" data-idx="${i}">
+<div style="width:36px;height:36px;border-radius:50%;background:${lookup(DB.agents,ct?.assigned_agent)?.color||'#1E3A52'};display:flex;align-items:center;justify-content:center;font-size:.65rem;font-weight:800;flex-shrink:0">${ct?initials(ct.name):'?'}</div>
+<div style="flex:1;min-width:0"><div style="font-size:.82rem;font-weight:600;margin-bottom:2px">${ct?ct.name:''}</div><div style="font-size:.7rem;color:#64748B;white-space:nowrap;overflow:hidden;text-overflow:ellipsis">${ch.lastMsg}</div></div>
+<span style="font-size:.62rem;color:#64748B;flex-shrink:0">${ch.time}</span></div>`}).join('')}
+</div>
+<div style="flex:1;display:flex;flex-direction:column;background:#102236">
+<div style="padding:12px 16px;border-bottom:1px solid #1E3A52;display:flex;align-items:center;gap:10px;justify-content:space-between">
+<div style="display:flex;align-items:center;gap:10px"><div style="width:34px;height:34px;border-radius:50%;background:${lookup(DB.agents,contact?.assigned_agent)?.color||'#1E3A52'};display:flex;align-items:center;justify-content:center;font-size:.65rem;font-weight:800">${contact?initials(contact.name):'?'}</div><div><div style="font-size:.9rem;font-weight:700">${contact?contact.name:''}</div><div style="font-size:.72rem;color:#64748B">${contact?contact.business:''}</div></div></div>
+<button class="btn-ghost" style="font-size:.72rem" data-action="coming-soon"><i data-lucide="file-text" class="w-4 h-4"></i>Templates</button>
+</div>
+<div id="wa-chat-body" style="flex:1;overflow-y:auto;padding:16px;display:flex;flex-direction:column;gap:8px;max-height:350px">
+${allMsgs.map(m=>`<div style="display:flex;${m.from==='agent'?'justify-content:flex-end':''}"><div class="${m.from==='agent'?'chat-bubble-right':'chat-bubble-left'}">${m.text}<div style="font-size:.6rem;color:#64748B;margin-top:4px;text-align:right">${m.time}</div></div></div>`).join('')}
+</div>
+<div style="padding:12px;border-top:1px solid #1E3A52;display:flex;gap:8px"><input class="form-input" id="wa-msg-input" placeholder="Type a message..." style="flex:1"/><button class="btn-orange" id="wa-send-btn" style="padding:9px 14px"><i data-lucide="send" class="w-4 h-4"></i></button></div>
+</div></div>
+</div>`}
+
+// ===== AUTOMATIONS =====
+function renderAutomations(){
+return`<div class="fade-up" style="max-width:1100px;margin:0 auto">
+<div style="display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;gap:12px;margin-bottom:20px">
+<div><h1 style="font-size:1.5rem;font-weight:800;margin-bottom:4px">Automations</h1><p style="color:#64748B;font-size:.85rem">Trigger-based WhatsApp messages, tasks, and reminders.</p></div>
+<button class="btn-orange" data-action="coming-soon"><i data-lucide="plus" class="w-4 h-4"></i>New Automation</button>
+</div>
+<div class="grid grid-cols-1 md:grid-cols-2 gap-4 mb-6">
+${DB.automations.map(a=>`<div class="card-dark p-5" style="border-color:${a.active?'rgba(16,185,129,.3)':'#1E3A52'}">
+<div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:10px">
+<span style="font-weight:700;font-size:.9rem">${a.name}</span>
+<div class="toggle-track ${a.active?'on':'off'}" data-action="toggle-auto" data-id="${a.id}"><div class="toggle-knob"></div></div>
+</div>
+<div style="display:flex;gap:6px;margin-bottom:8px"><span class="pill" style="background:rgba(6,182,212,.1);border:1px solid rgba(6,182,212,.3);color:#06B6D4">${a.trigger}</span><span class="pill" style="background:${a.action==='whatsapp'?'rgba(16,185,129,.1)':'rgba(249,115,22,.1)'};color:${a.action==='whatsapp'?'#10B981':'#F97316'}">${a.action}</span></div>
+<div style="font-size:.82rem;color:#94A3B8;font-style:italic;margin-bottom:10px">"${a.template.length>80?a.template.substring(0,80)+'…':a.template}"</div>
+<span style="font-size:.72rem;color:#64748B"><i data-lucide="activity" class="w-3 h-3" style="display:inline;vertical-align:middle"></i> ${a.runs} runs</span>
+</div>`).join('')}
+</div>
+</div>`}
+
+// ===== REPORTS =====
+function renderReports(){
+const wonDeals=scopedDeals().filter(d=>d.stage==='Won');
+const allDeals=scopedDeals();
+const wv=wonDeals.reduce((s,d)=>s+d.value,0);
+const pv=allDeals.filter(d=>!['Won','Lost'].includes(d.stage)).reduce((s,d)=>s+d.value,0);
+const convRate=allDeals.length>0?Math.round((wonDeals.length/allDeals.length)*100):0;
+const avgDeal=wonDeals.length>0?Math.round(wv/wonDeals.length):0;
+const monthlyData=[{m:'Feb',pv:8000,wv:2000},{m:'Mar',pv:12000,wv:4000},{m:'Apr',pv:18000,wv:6000},{m:'May',pv:22000,wv:9000},{m:'Jun',pv:28000,wv:12000},{m:'Jul',pv:pv+wv,wv:wv}];
+const maxVal=Math.max(...monthlyData.map(d=>d.pv),1);
+const lb=getLeaderboard();
+return`<div class="fade-up" style="max-width:1100px;margin:0 auto">
+<h1 style="font-size:1.5rem;font-weight:800;margin-bottom:4px">Reports</h1>
+<p style="color:#64748B;font-size:.85rem;margin-bottom:20px">Pipeline analytics, conversion rates, and revenue trends.</p>
+<div class="grid grid-cols-2 lg:grid-cols-4 gap-4 mb-6">
+${kpiCard('Revenue (July)',fmt$(wv),'Won deals','trending-up','#10B981','reports')}
+${kpiCard('Pipeline',fmt$(pv),'Open deals','target','#8B5CF6','deals')}
+${kpiCard('Conversion',convRate+'%','Win rate','percent','#F97316','reports')}
+${kpiCard('Avg Deal',fmt$(avgDeal),'Per won deal','bar-chart-3','#06B6D4','reports')}
+</div>
+<div class="card-dark p-5 mb-6">
+<div class="eyebrow mb-4">PIPELINE TREND — 2026</div>
+<div style="overflow-x:auto"><svg width="100%" viewBox="0 0 700 220" preserveAspectRatio="xMidYMid meet">
+<defs><linearGradient id="aG" x1="0" y1="0" x2="0" y2="1"><stop offset="0%" stop-color="#06B6D4" stop-opacity=".15"/><stop offset="100%" stop-color="#06B6D4" stop-opacity="0"/></linearGradient><linearGradient id="wG" x1="0" y1="0" x2="0" y2="1"><stop offset="0%" stop-color="#10B981" stop-opacity=".15"/><stop offset="100%" stop-color="#10B981" stop-opacity="0"/></linearGradient></defs>
+${[0,1,2,3,4].map(i=>`<line x1="60" y1="${20+i*40}" x2="680" y2="${20+i*40}" stroke="#1E3A52" stroke-width="1"/>`).join('')}
+${(()=>{const pts=monthlyData.map((d,i)=>({x:80+i*110,yP:180-(d.pv/maxVal)*160,yW:180-(d.wv/maxVal)*160,m:d.m,pv:d.pv,wv:d.wv}));const pLine=pts.map(p=>`${p.x},${p.yP}`).join(' ');const wLine=pts.map(p=>`${p.x},${p.yW}`).join(' ');return`<polyline points="${pLine}" fill="none" stroke="#06B6D4" stroke-width="2.5" stroke-linejoin="round"/><polyline points="${wLine}" fill="none" stroke="#10B981" stroke-width="2.5" stroke-linejoin="round"/>${pts.map(p=>`<circle cx="${p.x}" cy="${p.yP}" r="4" fill="#06B6D4" stroke="#102236" stroke-width="2"/><circle cx="${p.x}" cy="${p.yW}" r="4" fill="#10B981" stroke="#102236" stroke-width="2"/><text x="${p.x}" y="198" text-anchor="middle" fill="#64748B" font-size="11" font-weight="600">${p.m}</text>`).join('')}`})()}
+</svg></div>
+<div style="display:flex;gap:16px;justify-content:center;margin-top:8px"><div style="display:flex;align-items:center;gap:6px"><div style="width:12px;height:3px;background:#06B6D4;border-radius:2px"></div><span style="font-size:.75rem;color:#64748B">Pipeline</span></div><div style="display:flex;align-items:center;gap:6px"><div style="width:12px;height:3px;background:#10B981;border-radius:2px"></div><span style="font-size:.75rem;color:#64748B">Won</span></div></div>
+</div>
+<div class="card-dark mb-6" style="overflow-x:auto">
+<div style="padding:16px 20px;border-bottom:1px solid #1E3A52"><span class="eyebrow">TEAM LEADERBOARD</span></div>
+<table style="width:100%;text-align:left;border-collapse:collapse"><thead><tr style="background:rgba(6,182,212,.06)">
+<th style="padding:12px 16px;font-size:.7rem;font-weight:700;letter-spacing:.12em;text-transform:uppercase;color:#06B6D4">Rank</th>
+<th style="padding:12px 16px;font-size:.7rem;font-weight:700;letter-spacing:.12em;text-transform:uppercase;color:#06B6D4">Agent</th>
+<th style="padding:12px 16px;font-size:.7rem;font-weight:700;letter-spacing:.12em;text-transform:uppercase;color:#06B6D4" class="hidden md:table-cell">Territory</th>
+<th style="padding:12px 16px;font-size:.7rem;font-weight:700;letter-spacing:.12em;text-transform:uppercase;color:#06B6D4">Won</th>
+<th style="padding:12px 16px;font-size:.7rem;font-weight:700;letter-spacing:.12em;text-transform:uppercase;color:#06B6D4">Revenue</th>
+<th style="padding:12px 16px;font-size:.7rem;font-weight:700;letter-spacing:.12em;text-transform:uppercase;color:#06B6D4">CRM</th>
+<th style="padding:12px 16px;font-size:.7rem;font-weight:700;letter-spacing:.12em;text-transform:uppercase;color:#06B6D4">Earnings</th>
+</tr></thead><tbody>
+${lb.map(a=>{const role=getAgentRole(a);const rc=getRoleBadgeColors(role);return`<tr style="border-bottom:1px solid rgba(30,58,82,.5)" class="hover:bg-white/[.02]">
+<td style="padding:12px 16px;font-size:1.1rem">${a.rank===1?'🥇':a.rank===2?'🥈':a.rank===3?'🥉':'#'+a.rank}</td>
+<td style="padding:12px 16px"><div style="display:flex;align-items:center;gap:8px"><div style="width:30px;height:30px;border-radius:50%;background:${a.color};display:flex;align-items:center;justify-content:center;font-size:.6rem;font-weight:800">${a.avatar}</div><div><span style="font-weight:600;font-size:.85rem">${a.name}</span>${role==='agent_admin'?`<span class="pill" style="margin-left:6px;background:${rc.bg};color:${rc.color};font-size:.55rem">Agent/Admin</span>`:''}</div></div></td>
+<td style="padding:12px 16px;font-size:.82rem;color:#CBD5E1" class="hidden md:table-cell">${a.territory}</td>
+<td style="padding:12px 16px;font-weight:700">${a.deals_won}</td>
+<td style="padding:12px 16px;font-weight:600;color:#10B981">${fmt$(a.revenue)}</td>
+<td style="padding:12px 16px;font-weight:700">${a.crm_count}</td>
+<td style="padding:12px 16px;font-weight:700;color:#F97316">${fmt$(a.earnings)}</td>
+</tr>`}).join('')}
+</tbody></table></div>
+<div class="grid grid-cols-1 md:grid-cols-3 gap-4 mb-6">
+${DB.agents.filter(a=>!a.is_manager).map(a=>{const ad=DB.deals.filter(d=>d.agent_id===a.id);const won=ad.filter(d=>d.stage==='Won').length;const prog=a.targets.deals>0?Math.min(Math.round((won/a.targets.deals)*100),100):0;const crmC=getAgentCRMCount(a.id);const comm=getAgentMonthlyCommission(a.id,'2026-07');return`<div class="card-dark p-4">
+<div style="display:flex;align-items:center;gap:10px;margin-bottom:12px"><div style="width:36px;height:36px;border-radius:50%;background:${a.color};display:flex;align-items:center;justify-content:center;font-size:.7rem;font-weight:800">${a.avatar}</div><div><div style="font-weight:700;font-size:.9rem">${a.name}</div><div style="font-size:.72rem;color:#64748B">${a.territory}</div></div></div>
+<div style="margin-bottom:8px"><div style="display:flex;justify-content:space-between;font-size:.72rem;margin-bottom:4px"><span style="color:#64748B">Deals: ${won}/${a.targets.deals}</span><span style="color:#F97316">${prog}%</span></div><div style="background:#1E3A52;border-radius:999px;height:6px;overflow:hidden"><div style="width:${prog}%;height:100%;background:#F97316;border-radius:999px"></div></div></div>
+<div style="display:flex;justify-content:space-between;font-size:.78rem"><span style="color:#64748B">CRM: ${crmC}/${a.targets.crm}</span><span style="color:#10B981;font-weight:700">${fmt$(comm)}</span></div>
+</div>`}).join('')}
+</div>
+</div>`}
+
+// ===== ORG SETUP =====
+function renderOrgSetup(){
+if(APP.currentRole!=='manager')return`<div class="fade-up" style="max-width:600px;margin:60px auto;text-align:center"><div style="font-size:3rem;margin-bottom:16px">🔒</div><h2 style="font-size:1.3rem;font-weight:700;margin-bottom:8px">Access Restricted</h2><p style="color:#64748B">Manager access required to view Org Setup.</p></div>`;
+const tabs=['team','territories','targets'];
+const agentsList=DB.agents.filter(a=>!a.is_manager);
+return`<div class="fade-up" style="max-width:1100px;margin:0 auto">
+<h1 style="font-size:1.5rem;font-weight:800;margin-bottom:6px">Org Setup</h1>
+<p style="color:#64748B;font-size:.85rem;margin-bottom:16px">Manage your team, territories, and targets.</p>
+<div style="display:flex;gap:8px;margin-bottom:20px">${tabs.map(t=>`<button class="tab-btn${APP.orgTab===t?' active':''}" data-action="org-tab" data-tab="${t}">${t.charAt(0).toUpperCase()+t.slice(1)}</button>`).join('')}</div>
+${APP.orgTab==='team'?`
+${APP.currentRole==='manager'?`<div class="card-dark p-5 mb-4" style="border-color:rgba(249,115,22,.3)">
+<div class="eyebrow mb-3" style="color:#F97316">INVITE NEW AGENT</div>
+<div class="grid grid-cols-1 md:grid-cols-4 gap-3"><div><label class="form-label">Name</label><input class="form-input" id="inv-name" placeholder="Full name"/></div><div><label class="form-label">Email</label><input class="form-input" id="inv-email" placeholder="email@example.com"/></div><div><label class="form-label">Territory</label><input class="form-input" id="inv-territory" placeholder="Metro area"/></div><div style="display:flex;align-items:flex-end"><button class="btn-orange" style="width:100%" data-action="invite-agent"><i data-lucide="send" class="w-4 h-4"></i>Send Invitation</button></div></div></div>`:''}
+<div class="card-dark" style="overflow-x:auto"><table style="width:100%;text-align:left;border-collapse:collapse"><thead><tr style="background:rgba(6,182,212,.08)">
+<th style="padding:12px 16px;font-size:.7rem;font-weight:700;letter-spacing:.12em;text-transform:uppercase;color:#06B6D4">Agent</th>
+<th style="padding:12px 16px;font-size:.7rem;font-weight:700;letter-spacing:.12em;text-transform:uppercase;color:#06B6D4" class="hidden md:table-cell">Territory</th>
+<th style="padding:12px 16px;font-size:.7rem;font-weight:700;letter-spacing:.12em;text-transform:uppercase;color:#06B6D4">Status</th>
+<th style="padding:12px 16px;font-size:.7rem;font-weight:700;letter-spacing:.12em;text-transform:uppercase;color:#06B6D4" class="hidden md:table-cell">Joined</th>
+<th style="padding:12px 16px;font-size:.7rem;font-weight:700;letter-spacing:.12em;text-transform:uppercase;color:#06B6D4">Role</th>
+</tr></thead><tbody>
+${DB.agents.map(a=>{const role=getAgentRole(a);const rc=getRoleBadgeColors(role);return`<tr style="border-bottom:1px solid rgba(30,58,82,.5)"><td style="padding:12px 16px"><div style="display:flex;align-items:center;gap:10px"><div style="width:34px;height:34px;border-radius:50%;background:${a.color};display:flex;align-items:center;justify-content:center;font-size:.65rem;font-weight:800">${a.avatar}</div><div><div style="font-weight:600;font-size:.85rem">${a.name}</div><div style="font-size:.72rem;color:#64748B">${a.email}</div></div></div></td><td style="padding:12px 16px;font-size:.85rem;color:#CBD5E1" class="hidden md:table-cell">${a.territory}</td><td style="padding:12px 16px"><span class="pill" style="background:${statusColors[a.status]}20;color:${statusColors[a.status]}">${a.status.charAt(0).toUpperCase()+a.status.slice(1)}</span></td><td style="padding:12px 16px;font-size:.78rem;color:#64748B" class="hidden md:table-cell">${fmtDate(a.joined)}</td><td style="padding:12px 16px"><span class="pill" style="background:${rc.bg};color:${rc.color}">${getRoleBadgeLabel(role)}</span></td></tr>`}).join('')}
+</tbody></table></div>`
+:APP.orgTab==='territories'?`
+<div class="card-dark" style="overflow-x:auto"><table style="width:100%;text-align:left;border-collapse:collapse"><thead><tr style="background:rgba(6,182,212,.08)">
+<th style="padding:12px 16px;font-size:.7rem;font-weight:700;letter-spacing:.12em;text-transform:uppercase;color:#06B6D4">Territory</th>
+<th style="padding:12px 16px;font-size:.7rem;font-weight:700;letter-spacing:.12em;text-transform:uppercase;color:#06B6D4">Agent</th>
+<th style="padding:12px 16px;font-size:.7rem;font-weight:700;letter-spacing:.12em;text-transform:uppercase;color:#06B6D4">Contacts</th>
+<th style="padding:12px 16px;font-size:.7rem;font-weight:700;letter-spacing:.12em;text-transform:uppercase;color:#06B6D4">Open Deals</th>
+</tr></thead><tbody>
+${agentsList.map(a=>{const cc=DB.contacts.filter(c=>c.assigned_agent===a.id).length;const od=DB.deals.filter(d=>d.agent_id===a.id&&!['Won','Lost'].includes(d.stage)).length;return`<tr style="border-bottom:1px solid rgba(30,58,82,.5)"><td style="padding:12px 16px;font-weight:600">${a.territory}</td><td style="padding:12px 16px"><div style="display:flex;align-items:center;gap:6px"><div style="width:22px;height:22px;border-radius:50%;background:${a.color};display:flex;align-items:center;justify-content:center;font-size:.5rem;font-weight:800">${a.avatar}</div>${a.name}</div></td><td style="padding:12px 16px;font-weight:700">${cc}</td><td style="padding:12px 16px;font-weight:700;color:#F97316">${od}</td></tr>`}).join('')}
+</tbody></table></div>`
+:`<div class="card-dark p-5">
+<div class="eyebrow mb-4">AGENT TARGETS — JULY 2026</div>
+${agentsList.map(a=>`<div style="display:flex;align-items:center;gap:16px;padding:12px 0;border-bottom:1px solid rgba(30,58,82,.3);flex-wrap:wrap">
+<div style="display:flex;align-items:center;gap:8px;min-width:160px"><div style="width:28px;height:28px;border-radius:50%;background:${a.color};display:flex;align-items:center;justify-content:center;font-size:.55rem;font-weight:800">${a.avatar}</div><span style="font-weight:600;font-size:.85rem">${a.name}</span></div>
+<div style="display:flex;align-items:center;gap:6px"><label style="font-size:.72rem;color:#64748B">Deals:</label><input class="form-input" type="number" value="${a.targets.deals}" style="width:60px;padding:4px 8px;font-size:.82rem" data-target-agent="${a.id}" data-target-type="deals"/></div>
+<div style="display:flex;align-items:center;gap:6px"><label style="font-size:.72rem;color:#64748B">CRM:</label><input class="form-input" type="number" value="${a.targets.crm}" style="width:60px;padding:4px 8px;font-size:.82rem" data-target-agent="${a.id}" data-target-type="crm"/></div>
+</div>`).join('')}
+<button class="btn-orange mt-4" data-action="save-targets">Save Targets</button>
+</div>`}
+</div>`}
+
+// ===== SETTINGS =====
+function renderSettings(){
+const user=lookup(DB.agents,APP.currentAgent);
+return`<div class="fade-up" style="max-width:800px;margin:0 auto">
+<h1 style="font-size:1.5rem;font-weight:800;margin-bottom:20px">Settings</h1>
+<div class="card-dark p-5 mb-4">
+<div class="eyebrow mb-3">ACCOUNT</div>
+<div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+<div><label class="form-label">Display Name</label><input class="form-input" value="${user?user.name:''}"/></div>
+<div><label class="form-label">Email</label><input class="form-input" value="${user?user.email:''}"/></div>
+<div><label class="form-label">Role</label><div style="font-size:.9rem;font-weight:600;padding:9px 0">${getRoleBadgeLabel(APP.currentRole)}</div></div>
+<div><label class="form-label">Date</label><div style="font-size:.9rem;font-weight:600;padding:9px 0">July 20, 2026</div></div>
+</div><button class="btn-orange mt-3" data-action="coming-soon">Save Changes</button></div>
+<div class="card-dark p-5 mb-4">
+<div class="eyebrow mb-3">NOTIFICATIONS</div>
+<div style="display:flex;flex-direction:column;gap:12px">
+${['New lead assigned to me','Deal stage changed','Task due tomorrow','New WhatsApp message','Weekly performance report'].map((n,i)=>`<div style="display:flex;align-items:center;justify-content:space-between;padding:8px 0;border-bottom:1px solid rgba(30,58,82,.3)"><span style="font-size:.85rem">${n}</span><div class="toggle-track ${i<4?'on':'off'}" data-action="toggle-notif" data-idx="${i}"><div class="toggle-knob"></div></div></div>`).join('')}
+</div></div>
+<div class="card-dark p-5 mb-4">
+<div class="eyebrow mb-3">BRANDING</div>
+<div class="grid grid-cols-1 md:grid-cols-3 gap-4">
+<div><label class="form-label">Company Name</label><input class="form-input" value="BluWav Growth"/></div>
+<div><label class="form-label">CRM Subdomain</label><input class="form-input" value="bluwavcrm.com"/></div>
+<div><label class="form-label">Primary Color</label><input class="form-input" type="color" value="#F97316" style="height:38px;padding:4px"/></div>
+</div><button class="btn-orange mt-3" data-action="coming-soon">Save</button></div>
+<div class="card-dark p-5">
+<div class="eyebrow mb-3">SECURITY</div>
+<div class="grid grid-cols-1 md:grid-cols-2 gap-4 mb-3">
+<div><label class="form-label">New Password</label><input class="form-input" type="password" placeholder="••••••••"/></div>
+<div><label class="form-label">Confirm Password</label><input class="form-input" type="password" placeholder="••••••••"/></div>
+</div>
+<div style="display:flex;align-items:center;justify-content:space-between;padding:8px 0;border-bottom:1px solid rgba(30,58,82,.3);margin-bottom:12px"><span style="font-size:.85rem">Enable Two-Factor Auth</span><div class="toggle-track off" data-action="toggle-notif" data-idx="99"><div class="toggle-knob"></div></div></div>
+<button class="btn-ghost" style="color:#EF4444" data-action="sign-out"><i data-lucide="log-out" class="w-4 h-4"></i>Sign Out of All Devices</button>
+</div>
+</div>`}
+
+// ===== BILLING =====
+function renderBilling(){
+if(APP.currentRole!=='manager')return`<div class="fade-up" style="max-width:600px;margin:60px auto;text-align:center"><div style="font-size:3rem;margin-bottom:16px">🔒</div><h2 style="font-size:1.3rem;font-weight:700;margin-bottom:8px">Access Restricted</h2><p style="color:#64748B">Manager access required to view Billing.</p></div>`;
+return`<div class="fade-up" style="max-width:900px;margin:0 auto">
+<h1 style="font-size:1.5rem;font-weight:800;margin-bottom:20px">Billing</h1>
+<div class="card-dark p-5 mb-6" style="border-color:rgba(16,185,129,.3)">
+<div style="display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;gap:12px">
+<div><div class="eyebrow mb-2" style="color:#10B981">CURRENT PLAN</div>
+<div style="font-size:1.1rem;font-weight:800;margin-bottom:4px">BluWav CRM — Premium</div>
+<div style="font-size:.9rem;color:#10B981;font-weight:700;margin-bottom:8px">$179/month</div>
+<div style="display:flex;gap:8px;flex-wrap:wrap"><span class="pill" style="background:rgba(16,185,129,.12);color:#10B981">Active — 30-Day Free Trial</span><span style="font-size:.78rem;color:#64748B">Trial ends: Aug 19, 2026</span></div></div>
+<div style="display:flex;gap:8px"><button class="btn-orange" data-action="coming-soon">Upgrade Plan</button><button class="btn-ghost" style="color:#EF4444" data-action="coming-soon">Cancel</button></div>
+</div></div>
+<div class="card-dark mb-6" style="overflow-x:auto">
+<div style="padding:16px 20px;border-bottom:1px solid #1E3A52"><span class="eyebrow">PLAN COMPARISON</span></div>
+<table style="width:100%;text-align:left;border-collapse:collapse"><thead><tr style="background:rgba(6,182,212,.06)">
+<th style="padding:12px 16px;font-size:.75rem;color:#64748B">Feature</th>
+<th style="padding:12px 16px;text-align:center"><div style="font-weight:700">Lite</div><div style="font-size:.72rem;color:#64748B">$99/mo</div></th>
+<th style="padding:12px 16px;text-align:center;background:rgba(249,115,22,.05)"><div style="font-weight:700;color:#F97316">Premium</div><div style="font-size:.72rem;color:#64748B">$179/mo</div></th>
+<th style="padding:12px 16px;text-align:center"><div style="font-weight:700">Surge</div><div style="font-size:.72rem;color:#64748B">Contact us</div></th>
+</tr></thead><tbody>
+${[['Contacts','500','Unlimited','Unlimited'],['Users','2','5','Unlimited'],['Pipeline','Basic','Advanced','Custom'],['WhatsApp','—','✓','✓'],['Automations','3','Unlimited','Unlimited'],['Reports','Basic','Full','Custom'],['Priority Support','—','✓','✓'],['Dedicated AM','—','—','✓']].map(r=>`<tr style="border-bottom:1px solid rgba(30,58,82,.3)"><td style="padding:10px 16px;font-size:.82rem">${r[0]}</td>${r.slice(1).map((v,i)=>`<td style="padding:10px 16px;text-align:center;font-size:.82rem;${i===1?'background:rgba(249,115,22,.05)':''};color:${v==='✓'?'#10B981':v==='—'?'#EF4444':'white'};font-weight:${v==='✓'||v==='—'?'700':'400'}">${v}</td>`).join('')}</tr>`).join('')}
+</tbody></table></div>
+<div class="grid grid-cols-1 md:grid-cols-2 gap-4 mb-6">
+<div class="card-dark p-4"><div class="eyebrow mb-3">BILLING HISTORY</div>
+<div style="padding:8px 0;border-bottom:1px solid rgba(30,58,82,.3);display:flex;justify-content:space-between;font-size:.82rem"><span>Jul 1, 2026 — Free Trial Start</span><span style="color:#10B981;font-weight:700">$0.00</span></div>
+</div>
+<div class="card-dark p-4"><div class="eyebrow mb-3">PAYMENT METHOD</div>
+<div style="display:flex;align-items:center;gap:10px"><i data-lucide="credit-card" class="w-5 h-5" style="color:#64748B"></i><div><div style="font-size:.85rem;font-weight:600">Visa ending 4242</div><div style="font-size:.72rem;color:#64748B">Expires 08/28</div></div><button class="btn-ghost" style="margin-left:auto" data-action="coming-soon">Update</button></div>
+</div></div>
+</div>`}
+
+// ===== SUPER ADMIN =====
+function renderSuperAdmin(){
+if(APP.currentRole!=='manager')return`<div class="fade-up" style="max-width:600px;margin:60px auto;text-align:center"><div style="font-size:3rem;margin-bottom:16px">🔒</div><h2 style="font-size:1.3rem;font-weight:700;margin-bottom:8px">Access Restricted</h2><p style="color:#64748B">Manager access required to view Super Admin.</p></div>`;
+const activeSubs=DB.subscriptions.filter(s=>s.status==='active');
+const mrr=activeSubs.reduce((s,sub)=>s+sub.price,0);
+const trialSubs=DB.subscriptions.filter(s=>s.status==='trial').length;
+return`<div class="fade-up" style="max-width:1100px;margin:0 auto">
+<h1 style="font-size:1.5rem;font-weight:800;margin-bottom:20px">Super Admin</h1>
+<div class="grid grid-cols-2 lg:grid-cols-4 gap-4 mb-6">
+${kpiCard('CRM Clients',activeSubs.length.toString(),'Active subscriptions','users','#10B981','super-admin')}
+${kpiCard('Monthly Revenue',fmt$(mrr),'Recurring','dollar-sign','#F97316','super-admin')}
+${kpiCard('Trial Accounts',trialSubs.toString(),'In trial','clock','#8B5CF6','super-admin')}
+${kpiCard('Churn Rate','0%','No cancellations','shield','#06B6D4','super-admin')}
+</div>
+<div class="card-dark mb-6" style="overflow-x:auto">
+<div style="padding:14px 20px;border-bottom:1px solid #1E3A52"><span class="eyebrow">CLIENT ACCOUNTS</span></div>
+<table style="width:100%;text-align:left;border-collapse:collapse"><thead><tr style="background:rgba(6,182,212,.06)">
+<th style="padding:10px 16px;font-size:.7rem;font-weight:700;letter-spacing:.12em;text-transform:uppercase;color:#06B6D4">Contact</th>
+<th style="padding:10px 16px;font-size:.7rem;font-weight:700;letter-spacing:.12em;text-transform:uppercase;color:#06B6D4">Plan</th>
+<th style="padding:10px 16px;font-size:.7rem;font-weight:700;letter-spacing:.12em;text-transform:uppercase;color:#06B6D4">Price</th>
+<th style="padding:10px 16px;font-size:.7rem;font-weight:700;letter-spacing:.12em;text-transform:uppercase;color:#06B6D4">Status</th>
+<th style="padding:10px 16px;font-size:.7rem;font-weight:700;letter-spacing:.12em;text-transform:uppercase;color:#06B6D4" class="hidden md:table-cell">Agent</th>
+</tr></thead><tbody>
+${DB.subscriptions.map(s=>{const c=lookup(DB.contacts,s.contact_id);const ag=lookup(DB.agents,s.agent_id);return`<tr style="border-bottom:1px solid rgba(30,58,82,.5)"><td style="padding:10px 16px;font-weight:600">${c?c.name:''}</td><td style="padding:10px 16px"><span class="pill" style="background:rgba(249,115,22,.15);color:#F97316">${s.plan.toUpperCase()}</span></td><td style="padding:10px 16px;font-weight:700;color:#10B981">${fmt$(s.price)}/mo</td><td style="padding:10px 16px"><span class="pill" style="background:rgba(16,185,129,.12);color:#10B981">${s.status}</span></td><td style="padding:10px 16px;font-size:.82rem;color:#CBD5E1" class="hidden md:table-cell">${ag?ag.name:''}</td></tr>`}).join('')}
+</tbody></table></div>
+<div class="card-dark mb-6" style="overflow-x:auto">
+<div style="padding:14px 20px;border-bottom:1px solid #1E3A52"><span class="eyebrow">AGENT COMMISSION OVERVIEW</span></div>
+<table style="width:100%;text-align:left;border-collapse:collapse"><thead><tr style="background:rgba(6,182,212,.06)">
+<th style="padding:10px 16px;font-size:.7rem;font-weight:700;letter-spacing:.12em;text-transform:uppercase;color:#06B6D4">Agent</th>
+<th style="padding:10px 16px;font-size:.7rem;font-weight:700;letter-spacing:.12em;text-transform:uppercase;color:#06B6D4">Deal</th>
+<th style="padding:10px 16px;font-size:.7rem;font-weight:700;letter-spacing:.12em;text-transform:uppercase;color:#06B6D4">Amount</th>
+<th style="padding:10px 16px;font-size:.7rem;font-weight:700;letter-spacing:.12em;text-transform:uppercase;color:#06B6D4">Status</th>
+<th style="padding:10px 16px;font-size:.7rem;font-weight:700;letter-spacing:.12em;text-transform:uppercase;color:#06B6D4">Action</th>
+</tr></thead><tbody>
+${DB.commissions.map(c=>{const ag=lookup(DB.agents,c.agent_id);const d=lookup(DB.deals,c.deal_id);return`<tr style="border-bottom:1px solid rgba(30,58,82,.5)"><td style="padding:10px 16px;font-weight:600">${ag?ag.name:''}</td><td style="padding:10px 16px;font-size:.82rem;color:#CBD5E1">${d?d.name:''}</td><td style="padding:10px 16px;font-weight:700;color:#10B981">${fmt$(c.amount)}</td><td style="padding:10px 16px"><span class="pill" style="background:${c.status==='paid'?'rgba(16,185,129,.12)':'rgba(245,158,11,.12)'};color:${c.status==='paid'?'#10B981':'#F59E0B'}">${c.status.charAt(0).toUpperCase()+c.status.slice(1)}</span></td><td style="padding:10px 16px">${c.status==='pending'?`<button class="btn-ghost" style="color:#10B981;font-size:.72rem" data-action="mark-paid" data-id="${c.id}">Mark Paid</button>`:''}</td></tr>`}).join('')}
+</tbody></table></div>
+<div class="card-dark p-4 mb-6">
+<div class="eyebrow mb-3">SYSTEM HEALTH</div>
+<div style="display:flex;gap:12px;flex-wrap:wrap">
+<span class="pill" style="background:rgba(16,185,129,.12);color:#10B981;padding:6px 14px">Database: Online ✓</span>
+<span class="pill" style="background:rgba(16,185,129,.12);color:#10B981;padding:6px 14px">WhatsApp API: Connected ✓</span>
+<span class="pill" style="background:rgba(16,185,129,.12);color:#10B981;padding:6px 14px">Email SMTP: Connected ✓</span>
+</div></div>
+<div class="card-dark p-4 mb-6">
+<div class="eyebrow mb-3">QUICK ACTIONS</div>
+<div style="display:flex;gap:8px;flex-wrap:wrap">
+<button class="btn-outline" data-action="export-csv"><i data-lucide="download" class="w-4 h-4"></i>Export All Contacts (CSV)</button>
+<button class="btn-outline" data-action="coming-soon"><i data-lucide="megaphone" class="w-4 h-4"></i>Send Team Announcement</button>
+</div></div>
+</div>`}
+
+// ===== AGENT DASHBOARD =====
+function renderAgentDashboard(){
+const aid=APP.selectedAgent||APP.currentAgent;
+const ag=lookup(DB.agents,aid);if(!ag)return'<div>Agent not found</div>';
+const monthEarnings=getAgentMonthlyCommission(aid,'2026-07');
+const dealsWon=DB.deals.filter(d=>d.agent_id===aid&&d.stage==='Won'&&d.updated_at.startsWith('2026-07'));
+const crmCount=getAgentCRMCount(aid);const unlocked=isUnlocked(aid);
+return`<div class="fade-up" style="max-width:1100px;margin:0 auto">
+<div class="eyebrow mb-1">AGENT PERFORMANCE — JULY 2026</div>
+<h1 style="font-size:1.5rem;font-weight:800;margin-bottom:20px">${ag.name}'s Dashboard</h1>
+<div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 mb-6">
+${kpiCard("Month's Earnings",fmt$(monthEarnings),'July 2026','dollar-sign','#10B981','commissions')}
+${kpiCard('Deals Closed',dealsWon.length.toString(),'Won this month','check-circle','#F97316','deals')}
+${kpiCard('CRM Clients',crmCount.toString(),unlocked?'25% Unlocked!':'Need '+(3-crmCount)+' more','users','#06B6D4','contacts')}
+${kpiCard('Annual Projection',fmt$(monthEarnings*12),'Based on July pace','trending-up','#8B5CF6','reports')}
+</div>
+<div class="card-dark p-5 mb-6">
+<div class="eyebrow mb-2">25% CRM UNLOCK PROGRESS</div>
+<div style="display:flex;align-items:center;gap:16px"><div style="flex:1;background:#1E3A52;border-radius:999px;height:12px;overflow:hidden"><div style="width:${Math.min((crmCount/COMMISSION_RATES.unlock_threshold)*100,100)}%;height:100%;border-radius:999px;background:${unlocked?'#10B981':'linear-gradient(90deg,#06B6D4,#F97316)'};transition:width .5s"></div></div>
+<span style="font-size:.85rem;font-weight:700;color:${unlocked?'#10B981':'#F97316'}">${crmCount}/${COMMISSION_RATES.unlock_threshold}</span>
+${unlocked?'<span class="pill" style="background:rgba(16,185,129,.15);color:#10B981">UNLOCKED 🎉</span>':'<span class="pill" style="background:rgba(249,115,22,.15);color:#F97316">In Progress</span>'}
+</div></div>
+</div>`}
+
+// ===== COMMISSIONS =====
+function renderCommissions(){
+const comms=scopedCommissions();
+const pending=comms.filter(c=>c.status==='pending').reduce((s,c)=>s+c.amount,0);
+const paid=comms.filter(c=>c.status==='paid').reduce((s,c)=>s+c.amount,0);
+return`<div class="fade-up" style="max-width:1100px;margin:0 auto">
+<h1 style="font-size:1.5rem;font-weight:800;margin-bottom:4px">Commission Tracker</h1>
+<p style="color:#64748B;font-size:.85rem;margin-bottom:20px">Payout cycle: 15th of each month.</p>
+<div class="grid grid-cols-1 sm:grid-cols-3 gap-4 mb-6">
+${kpiCard('Pending',fmt$(pending),'July 2026','clock','#F59E0B','commissions')}
+${kpiCard('Paid Out',fmt$(paid),'Completed','check-circle','#10B981','commissions')}
+${kpiCard('Next Payout','Aug 15, 2026','Scheduled','calendar','#F97316','commissions')}
+</div>
+<div class="card-dark" style="overflow-x:auto"><table style="width:100%;text-align:left;border-collapse:collapse"><thead><tr style="background:rgba(6,182,212,.06)">
+<th style="padding:10px 16px;font-size:.7rem;font-weight:700;letter-spacing:.12em;text-transform:uppercase;color:#06B6D4">Agent</th>
+<th style="padding:10px 16px;font-size:.7rem;font-weight:700;letter-spacing:.12em;text-transform:uppercase;color:#06B6D4">Deal</th>
+<th style="padding:10px 16px;font-size:.7rem;font-weight:700;letter-spacing:.12em;text-transform:uppercase;color:#06B6D4">Amount</th>
+<th style="padding:10px 16px;font-size:.7rem;font-weight:700;letter-spacing:.12em;text-transform:uppercase;color:#06B6D4">Status</th>
+<th style="padding:10px 16px;font-size:.7rem;font-weight:700;letter-spacing:.12em;text-transform:uppercase;color:#06B6D4" class="hidden md:table-cell">Payout</th>
+${APP.currentRole==='manager'?'<th style="padding:10px 16px"></th>':''}
+</tr></thead><tbody>
+${comms.map(c=>{const ag=lookup(DB.agents,c.agent_id);const d=lookup(DB.deals,c.deal_id);return`<tr style="border-bottom:1px solid rgba(30,58,82,.5)"><td style="padding:10px 16px;font-weight:600">${ag?ag.name:''}</td><td style="padding:10px 16px;font-size:.82rem;color:#CBD5E1">${d?d.name:''}</td><td style="padding:10px 16px;font-weight:700;color:#10B981">${fmt$(c.amount)}</td><td style="padding:10px 16px"><span class="pill" style="background:${c.status==='paid'?'rgba(16,185,129,.12)':'rgba(245,158,11,.12)'};color:${c.status==='paid'?'#10B981':'#F59E0B'}">${c.status.charAt(0).toUpperCase()+c.status.slice(1)}</span></td><td style="padding:10px 16px;font-size:.82rem;color:#64748B" class="hidden md:table-cell">${c.payout_date||'—'}</td>${APP.currentRole==='manager'&&c.status==='pending'?`<td style="padding:10px 16px"><button class="btn-ghost" style="color:#10B981;font-size:.72rem" data-action="mark-paid" data-id="${c.id}">Mark Paid</button></td>`:`<td></td>`}</tr>`}).join('')}
+</tbody></table></div>
+</div>`}
+
+// ===== MODALS =====
+function renderModal(modal){
+switch(modal.type){
+case 'add-contact':return renderAddContactModal();
+case 'add-deal':return renderAddDealModal(modal.data);
+case 'contact-detail':return renderContactDetailModal(modal.data);
+case 'deal-detail':return renderDealDetailModal(modal.data);
+default:return'';}}
+
+function renderAddContactModal(){
+const islands=[...new Set(DB.contacts.map(c=>c.island))].sort();
+return`<div class="modal-box" style="max-width:520px;width:95%;padding:24px">
+<div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:20px"><h2 style="font-size:1.1rem;font-weight:800">Add New Contact</h2><button class="btn-ghost" data-action="close-modal"><i data-lucide="x" class="w-5 h-5"></i></button></div>
+<div class="grid grid-cols-1 md:grid-cols-2 gap-3">
+<div><label class="form-label">Name *</label><input class="form-input" id="ac-name" placeholder="Full name" required/></div>
+<div><label class="form-label">Business *</label><input class="form-input" id="ac-business" placeholder="Business name" required/></div>
+<div><label class="form-label">Email</label><input class="form-input" id="ac-email" placeholder="email@example.com"/></div>
+<div><label class="form-label">Phone</label><input class="form-input" id="ac-phone" placeholder="+1-868-..."/></div>
+<div><label class="form-label">Island</label><select class="form-input" id="ac-island">${islands.map(i=>`<option value="${i}">${i}</option>`).join('')}</select></div>
+<div><label class="form-label">Assign Agent</label><select class="form-input" id="ac-agent">${DB.agents.filter(a=>!a.is_manager&&a.status==='active').map(a=>`<option value="${a.id}"${a.id===APP.currentAgent||(!lookup(DB.agents,APP.currentAgent)?.is_manager&&a.id===APP.currentAgent)?' selected':''}>${a.name}</option>`).join('')}</select></div>
+</div>
+<button class="btn-orange mt-4" style="width:100%" data-action="submit-contact">Add Contact</button></div>`}
+
+function renderAddDealModal(data){
+const preContact=data?.contactId||'';
+return`<div class="modal-box" style="max-width:560px;width:95%;padding:24px">
+<div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:20px"><h2 style="font-size:1.1rem;font-weight:800">New Deal</h2><button class="btn-ghost" data-action="close-modal"><i data-lucide="x" class="w-5 h-5"></i></button></div>
+<div class="grid grid-cols-1 md:grid-cols-2 gap-3">
+<div style="grid-column:1/-1"><label class="form-label">Contact *</label><select class="form-input" id="nd-contact"><option value="">Select contact...</option>${scopedContacts().map(c=>`<option value="${c.id}"${c.id===preContact?' selected':''}>${c.name} — ${c.business}</option>`).join('')}</select></div>
+<div><label class="form-label">Deal Type</label><select class="form-input" id="nd-type"><option value="Ripple">🌊 Ripple</option><option value="Current">⚡ Current</option><option value="Surge">🚀 Surge</option></select></div>
+<div><label class="form-label">Value ($)</label><input class="form-input" type="number" id="nd-value" value="1800"/></div>
+<div><label class="form-label">Stage</label><select class="form-input" id="nd-stage">${stages.map(s=>`<option value="${s}">${s}</option>`).join('')}</select></div>
+<div><label class="form-label">Agent</label><select class="form-input" id="nd-agent">${DB.agents.filter(a=>!a.is_manager&&a.status==='active').map(a=>`<option value="${a.id}"${a.id===APP.currentAgent?' selected':''}>${a.name}</option>`).join('')}</select></div>
+</div>
+<button class="btn-orange mt-4" style="width:100%" data-action="submit-deal">Create Deal</button></div>`}
+
+function renderContactDetailModal(data){
+const c=lookup(DB.contacts,data.contactId);if(!c)return'';
+const deals=contactDeals(c.id);const acts=contactActivities(c.id);const tasks=contactTasks(c.id);
+const sub=DB.subscriptions.find(s=>s.contact_id===c.id);const ag=lookup(DB.agents,c.assigned_agent);
+const tab=APP.contactModalTab||'overview';const openD=deals.filter(d=>!['Won','Lost'].includes(d.stage));const totalVal=deals.reduce((s,d)=>s+d.value,0);
+return`<div class="modal-box" style="max-width:800px;width:95%">
+<div style="background:linear-gradient(135deg,#0D1B2A,#064E63);padding:24px;border-bottom:1px solid #1E3A52">
+<div style="display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;gap:12px">
+<div style="display:flex;align-items:center;gap:14px"><div style="width:52px;height:52px;border-radius:50%;background:${ag?.color||'#1E3A52'};display:flex;align-items:center;justify-content:center;font-size:1rem;font-weight:800">${initials(c.name)}</div><div><div style="font-size:1.2rem;font-weight:800">${c.name}</div><div style="font-size:.85rem;color:#94A3B8">${c.business}</div>
+<div style="display:flex;gap:6px;margin-top:4px"><span class="pill" style="background:rgba(6,182,212,.15);color:#06B6D4">${c.island}</span>${c.is_crm_client?'<span class="pill" style="background:rgba(16,185,129,.12);color:#10B981">CRM Client</span>':'<span class="pill" style="background:rgba(100,116,139,.12);color:#64748B">Prospect</span>'}</div></div></div>
+<button class="btn-ghost" data-action="close-modal"><i data-lucide="x" class="w-5 h-5"></i></button></div></div>
+<div style="display:flex;gap:4px;padding:12px 24px;border-bottom:1px solid #1E3A52;flex-wrap:wrap">${['overview','deals','activities'].map(t=>`<button class="tab-btn${tab===t?' active':''}" data-action="contact-tab" data-tab="${t}">${t.charAt(0).toUpperCase()+t.slice(1)}</button>`).join('')}</div>
+<div style="padding:24px">
+${tab==='overview'?`<div class="grid grid-cols-1 md:grid-cols-2 gap-4 mb-4">
+<div class="card-dark p-4"><div class="eyebrow mb-3">CONTACT INFO</div>
+<div style="font-size:.85rem;margin-bottom:8px"><span style="color:#64748B">Email:</span> ${c.email}</div>
+<div style="font-size:.85rem;margin-bottom:8px"><span style="color:#64748B">Phone:</span> ${c.phone}</div>
+<div style="font-size:.85rem;margin-bottom:8px"><span style="color:#64748B">Island:</span> ${c.island}</div>
+<div style="font-size:.85rem"><span style="color:#64748B">Agent:</span> ${ag?ag.name:'—'}</div></div>
+<div class="card-dark p-4"><div class="eyebrow mb-3">DEAL SUMMARY</div>
+<div style="font-size:.85rem;margin-bottom:8px"><span style="color:#64748B">Open Deals:</span> <span style="font-weight:700;color:#F97316">${openD.length}</span></div>
+<div style="font-size:.85rem;margin-bottom:8px"><span style="color:#64748B">Total Value:</span> <span style="font-weight:700;color:#10B981">${fmt$(totalVal)}</span></div>
+<div style="font-size:.85rem"><span style="color:#64748B">Won:</span> ${deals.filter(d=>d.stage==='Won').length}</div></div></div>
+${sub?`<div class="card-dark p-4" style="border-color:rgba(16,185,129,.3)"><div class="eyebrow mb-2" style="color:#10B981">CRM SUBSCRIPTION</div><div style="display:flex;gap:16px;flex-wrap:wrap;font-size:.85rem"><span>Plan: ${sub.plan.toUpperCase()}</span><span>${fmt$(sub.price)}/mo</span><span class="pill" style="background:rgba(16,185,129,.12);color:#10B981">${sub.status}</span></div></div>`:''}`
+:tab==='deals'?`${deals.length?deals.map(d=>{const dag=lookup(DB.agents,d.agent_id);return`<div style="display:flex;align-items:center;gap:12px;padding:12px;border:1px solid #1E3A52;border-radius:10px;margin-bottom:8px;background:#0D1B2A">
+<span class="pill" style="background:${typeColors[d.type]}20;color:${typeColors[d.type]}">${typeEmoji[d.type]} ${d.type}</span>
+<div style="flex:1;min-width:0"><div style="font-weight:600;font-size:.85rem">${d.name}</div><div style="font-size:.72rem;color:#64748B">${dag?dag.name:''}</div></div>
+<span style="font-weight:700;color:#10B981">${fmt$(d.value)}</span>
+<span class="stage-badge" style="background:${stageColors[d.stage]}20;color:${stageColors[d.stage]}">${d.stage}</span></div>`}).join(''):'<div style="text-align:center;padding:30px;color:#64748B">No deals yet</div>'}`
+:`${acts.length?acts.map(a=>`<div style="display:flex;gap:12px;padding:10px 0;border-bottom:1px solid rgba(30,58,82,.3)">
+<div style="width:3px;border-radius:999px;background:${actTypeColors[a.type]||'#64748B'};flex-shrink:0"></div>
+<div style="flex:1"><div style="display:flex;align-items:center;gap:6px;margin-bottom:3px"><span class="pill" style="background:${actTypeColors[a.type]}20;color:${actTypeColors[a.type]}">${a.type}</span><span style="font-size:.7rem;color:#64748B">${a.created_at}</span></div><div style="font-size:.82rem;color:#CBD5E1">${a.desc}</div></div></div>`).join(''):'<div style="text-align:center;padding:30px;color:#64748B">No activities yet</div>'}`}
+</div></div>`}
+
+function renderDealDetailModal(data){
+const d=lookup(DB.deals,data.dealId);if(!d)return'';
+const c=lookup(DB.contacts,d.contact_id);const ag=lookup(DB.agents,d.agent_id);const comm=calcCommission(d);
+return`<div class="modal-box" style="max-width:700px;width:95%">
+<div style="background:linear-gradient(135deg,#0D1B2A,#064E63);padding:24px;border-bottom:1px solid #1E3A52">
+<div style="display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;gap:12px">
+<div><div style="display:flex;align-items:center;gap:8px;margin-bottom:6px"><span class="pill" style="background:${typeColors[d.type]}20;color:${typeColors[d.type]}">${typeEmoji[d.type]} ${d.type}</span><span class="stage-badge" style="background:${stageColors[d.stage]}20;color:${stageColors[d.stage]}">${d.stage}</span></div>
+<div style="font-size:1.2rem;font-weight:800">${d.name}</div>
+<div style="font-size:.85rem;color:#94A3B8">${c?c.name+' — '+c.business:''}</div></div>
+<button class="btn-ghost" data-action="close-modal"><i data-lucide="x" class="w-5 h-5"></i></button></div></div>
+<div style="padding:24px">
+<div class="grid grid-cols-2 md:grid-cols-4 gap-3 mb-5">
+<div style="text-align:center;padding:14px;background:#0D1B2A;border:1px solid #1E3A52;border-radius:10px"><div style="font-size:1.1rem;font-weight:800;color:#10B981">${fmt$(d.value)}</div><div style="font-size:.68rem;color:#64748B">Deal Value</div></div>
+<div style="text-align:center;padding:14px;background:#0D1B2A;border:1px solid #1E3A52;border-radius:10px"><div style="font-size:1.1rem;font-weight:800;color:#F97316">${fmt$(comm)}</div><div style="font-size:.68rem;color:#64748B">Commission</div></div>
+<div style="text-align:center;padding:14px;background:#0D1B2A;border:1px solid #1E3A52;border-radius:10px"><div style="font-size:.9rem;font-weight:700">${ag?ag.name:'—'}</div><div style="font-size:.68rem;color:#64748B">Agent</div></div>
+<div style="text-align:center;padding:14px;background:#0D1B2A;border:1px solid #1E3A52;border-radius:10px"><div style="font-size:.9rem;font-weight:700">${fmtDate(d.created_at)}</div><div style="font-size:.68rem;color:#64748B">Created</div></div>
+</div>
+<div style="display:flex;align-items:center;gap:8px"><span style="font-size:.85rem;color:#64748B">Move stage:</span>
+<select class="form-input" data-action="stage-change" data-deal-id="${d.id}" style="width:auto;min-width:140px;font-size:.85rem">${stages.map(s=>`<option value="${s}"${d.stage===s?' selected':''}>${s}</option>`).join('')}</select></div>
+</div></div>`}
+
+// ===== RENDER =====
+function render(){
+const isLogin=APP.page==='login';
+const loginEl=document.getElementById('login-screen-bw00');
+const headerEl=document.getElementById('app-header-bw01');
+const bodyEl=document.getElementById('app-body-bw');
+const fabEl=document.getElementById('whatsapp-fab-bw17');
+loginEl.style.display=isLogin?'flex':'none';
+headerEl.style.display=isLogin?'none':'flex';
+bodyEl.style.display=isLogin?'none':'flex';
+fabEl.style.display=isLogin?'none':'flex';
+if(isLogin){refreshIcons();return}
+const user=lookup(DB.agents,APP.currentAgent);
+document.getElementById('page-title-bw03').textContent=getPageTitle(APP.page);
+// Header user info
+const hAvatar=document.getElementById('header-avatar-bw');
+hAvatar.style.background=user?user.color:'#F97316';hAvatar.textContent=user?user.avatar:'AT';
+document.getElementById('header-username-bw').textContent=user?user.name.split(' ')[0]:'Andrea';
+const badge=document.getElementById('header-role-badge-bw');
+const curRoleLabel=getRoleBadgeLabel(APP.currentRole);
+const curRoleColors=getRoleBadgeColors(APP.currentRole);
+badge.textContent=curRoleLabel;
+badge.style.background=curRoleColors.bg;
+badge.style.color=curRoleColors.color;
+// User dropdown
+const ddList=document.getElementById('user-dd-list-bw');
+ddList.innerHTML=DB.agents.map(a=>{const role=getAgentRole(a);const rc=getRoleBadgeColors(role);return`<div class="nav-item" style="margin:0 4px;${a.id===APP.currentAgent?'color:#F97316;font-weight:700':''}" data-action="switch-user" data-aid="${a.id}" data-role="${role}"><div style="width:24px;height:24px;border-radius:50%;background:${a.color};display:flex;align-items:center;justify-content:center;font-size:.55rem;font-weight:800">${a.avatar}</div>${a.name}<span class="pill" style="margin-left:auto;font-size:.58rem;background:${rc.bg};color:${rc.color}">${getRoleBadgeLabel(role)}</span></div>`}).join('');
+// Sidebar nav
+const navEl=document.getElementById('sidebar-nav-bw');
+navEl.innerHTML=NAV_ITEMS.map(item=>{
+if(item.type==='label')return`<div class="section-label">${item.label}</div>`;
+if(item.managerOnly&&APP.currentRole!=='manager')return'';
+return`<div class="nav-item${APP.page===item.page?' nav-active':''}" data-page="${item.page}"><i data-lucide="${item.icon}" class="w-4 h-4"></i>${item.label}</div>`}).join('');
+// Sidebar agent card
+const sCard=document.getElementById('sidebar-agent-card-bw');
+const sRoleLabel=getRoleBadgeLabel(APP.currentRole);
+const sRoleColor=APP.currentRole==='manager'?'#F97316':APP.currentRole==='agent_admin'?'#F59E0B':'#10B981';
+sCard.innerHTML=user?`<div style="width:32px;height:32px;border-radius:50%;background:${user.color};display:flex;align-items:center;justify-content:center;font-size:.65rem;font-weight:800;flex-shrink:0">${user.avatar}</div><div style="min-width:0"><div style="font-size:.8rem;font-weight:600;white-space:nowrap;overflow:hidden;text-overflow:ellipsis">${user.name}</div><div style="display:flex;align-items:center;gap:4px;margin-top:2px"><span style="width:6px;height:6px;border-radius:50%;background:${sRoleColor};display:inline-block;animation:pulseDot 2s infinite"></span><span style="font-size:.68rem;color:${sRoleColor}">${sRoleLabel}</span></div></div>`:'';
+// Sidebar nav clicks
+navEl.querySelectorAll('.nav-item[data-page]').forEach(el=>{el.addEventListener('click',()=>{APP.page=el.dataset.page;APP.modal=null;closeMobileSidebar();render()})});
+// Main content
+document.getElementById('main-content-bw15').innerHTML=renderPage(APP.page);
+// Modal
+const overlay=document.getElementById('modal-overlay-bw16');
+if(APP.modal){overlay.innerHTML=renderModal(APP.modal);overlay.style.display='flex'}else{overlay.style.display='none';overlay.innerHTML=''}
+refreshIcons();attachDynamic();
+}
+
+function refreshIcons(){if(typeof lucide!=='undefined'&&typeof lucide.createIcons==='function'){lucide.createIcons()}}
+
+function attachDynamic(){
+const csi=document.getElementById('contact-search-inp');
+if(csi){csi.addEventListener('input',e=>{APP.contactSearch=e.target.value;render();setTimeout(()=>{const el=document.getElementById('contact-search-inp');if(el){el.focus();el.setSelectionRange(el.value.length,el.value.length)}},0)})}
+const cfi=document.getElementById('contact-filter-sel');
+if(cfi)cfi.addEventListener('change',e=>{APP.contactFilter=e.target.value;render()});
+const csi2=document.getElementById('contact-sort-sel');
+if(csi2)csi2.addEventListener('change',e=>{APP.contactSort=e.target.value;render()});
+const daf=document.getElementById('deals-agent-sel');
+if(daf)daf.addEventListener('change',e=>{APP.dealsAgentFilter=e.target.value;render()});
+const dtf=document.getElementById('deals-type-sel');
+if(dtf)dtf.addEventListener('change',e=>{APP.dealsTypeFilter=e.target.value;render()});
+const ndt=document.getElementById('nd-type');
+if(ndt)ndt.addEventListener('change',e=>{const vals={Ripple:1800,Current:3000,Surge:5000};const vi=document.getElementById('nd-value');if(vi)vi.value=vals[e.target.value]||1800});
+document.querySelectorAll('[data-logtype]').forEach(btn=>{btn.addEventListener('click',()=>{document.querySelectorAll('[data-logtype]').forEach(b=>b.classList.remove('active'));btn.classList.add('active')})});
+document.querySelectorAll('select[data-action="stage-change"]').forEach(sel=>{sel.addEventListener('change',e=>{onStageChange(sel.dataset.dealId,e.target.value)})});
+const gs=document.getElementById('global-search-bw04');
+if(gs){gs.addEventListener('keydown',e=>{if(e.key==='Enter'&&gs.value.trim()){APP.contactSearch=gs.value.trim();APP.page='contacts';render()}})}
+// WA send
+const waSend=document.getElementById('wa-send-btn');
+const waInput=document.getElementById('wa-msg-input');
+if(waSend&&waInput){waSend.addEventListener('click',()=>{const txt=waInput.value.trim();if(!txt)return;const chats=[{cid:'c7'},{cid:'c14'},{cid:'c27'},{cid:'c10'},{cid:'c9'}];const cid=chats[APP.selectedChatIdx]?.cid;if(!cid)return;if(!APP.waMessages[cid])APP.waMessages[cid]=[];APP.waMessages[cid].push({from:'agent',text:txt,time:'Now'});render();setTimeout(()=>{const body=document.getElementById('wa-chat-body');if(body)body.scrollTop=body.scrollHeight},50)})}
+}
+
+// ===== GLOBAL EVENT DELEGATION =====
+document.addEventListener('click',function(e){
+const target=e.target.closest('[data-action]');
+if(!target)return;
+const action=target.dataset.action;
+switch(action){
+case 'navigate':APP.page=target.dataset.page;APP.modal=null;render();break;
+case 'filter-stage':APP.page='deals';APP.dealsFilter=target.dataset.stage;APP.dealsView='kanban';render();break;
+case 'open-contact':e.preventDefault();e.stopPropagation();APP.contactModalTab='overview';APP.modal={type:'contact-detail',data:{contactId:target.dataset.id}};render();break;
+case 'open-deal':APP.modal={type:'deal-detail',data:{dealId:target.dataset.id}};render();break;
+case 'open-modal':{const modal=target.dataset.modal;if(modal==='add-contact'){APP.modal={type:'add-contact',data:{}}}else if(modal==='add-deal'){APP.modal={type:'add-deal',data:{contactId:target.dataset.cid||''}}}render();break}
+case 'close-modal':APP.modal=null;render();break;
+case 'quick-deal':e.stopPropagation();APP.modal={type:'add-deal',data:{contactId:target.dataset.cid}};render();break;
+case 'mark-done':{e.stopPropagation();const t=DB.tasks.find(x=>x.id===target.dataset.id);if(t){t.status='done';showToast('Task marked as done!','success');render()}break}
+case 'toggle-auto':{const a=DB.automations.find(x=>x.id===target.closest('[data-id]')?.dataset.id);if(a){a.active=!a.active;showToast(a.active?a.name+' activated':'Automation paused',a.active?'success':'warning');render()}break}
+case 'coming-soon':showToast('Coming soon!','info');break;
+case 'deals-view':APP.dealsView=target.dataset.view;render();break;
+case 'deals-filter':APP.dealsFilter=target.dataset.stage;render();break;
+case 'activities-tab':APP.activitiesTab=target.dataset.tab;render();break;
+case 'act-type-filter':APP.activitiesTypeFilter=target.dataset.type;render();break;
+case 'contact-tab':APP.contactModalTab=target.dataset.tab;APP.modal={...APP.modal};render();break;
+case 'org-tab':APP.orgTab=target.dataset.tab;render();break;
+case 'cal-prev':if(APP.calMonth===0){APP.calMonth=11;APP.calYear--}else APP.calMonth--;render();break;
+case 'cal-next':if(APP.calMonth===11){APP.calMonth=0;APP.calYear++}else APP.calMonth++;render();break;
+case 'select-email':APP.selectedEmailIdx=parseInt(target.dataset.idx);render();break;
+case 'select-chat':APP.selectedChatIdx=parseInt(target.dataset.idx);render();break;
+case 'dash-view-agent':APP.dashViewAgent=target.dataset.aid;render();break;
+case 'demo-login':APP.currentAgent=target.dataset.agent;APP.currentRole=target.dataset.role;APP.page='dashboard';render();break;
+case 'switch-user':APP.currentAgent=target.dataset.aid;APP.currentRole=target.dataset.role;document.getElementById('user-dropdown-bw').style.display='none';render();break;
+case 'sign-out':APP.page='login';render();break;
+case 'submit-contact':{
+const name=document.getElementById('ac-name')?.value?.trim();
+const biz=document.getElementById('ac-business')?.value?.trim();
+if(!name||!biz){showToast('Name and Business are required','error');return}
+const agId=document.getElementById('ac-agent')?.value||APP.currentAgent;
+const newC={id:'c'+(APP.nextId.c++),name,business:biz,email:document.getElementById('ac-email')?.value||'',phone:document.getElementById('ac-phone')?.value||'',island:document.getElementById('ac-island')?.value||'Trinidad',is_crm_client:false,created_at:'2026-07-20',assigned_agent:agId,notes:''};
+DB.contacts.push(newC);triggerAutomation('contact_created',newC.id);APP.modal=null;showToast('Contact added!','success');render();break}
+case 'submit-deal':{
+const cid=document.getElementById('nd-contact')?.value;
+if(!cid){showToast('Select a contact','error');return}
+const c=lookup(DB.contacts,cid);const type=document.getElementById('nd-type')?.value||'Ripple';
+const val=parseFloat(document.getElementById('nd-value')?.value)||1800;
+const stage=document.getElementById('nd-stage')?.value||'Lead';
+const agId=document.getElementById('nd-agent')?.value||APP.currentAgent;
+const newD={id:'d'+(APP.nextId.d++),contact_id:cid,agent_id:agId,name:(c?c.business:'')+' — '+type,type,value:val,stage,is_crm_deal:false,created_at:'2026-07-20',updated_at:'2026-07-20',notes:''};
+DB.deals.push(newD);
+if(stage==='Won'){const comm=calcCommission(newD);DB.commissions.push({id:'com'+(APP.nextId.com++),agent_id:agId,deal_id:newD.id,month:'2026-07',amount:comm,status:'pending',payout_date:'2026-08-15',created_at:'2026-07-20'})}
+triggerAutomation('stage_'+stage.toLowerCase(),cid);APP.modal=null;showToast('Deal created!','success');render();break}
+case 'submit-activity':{
+const typeBtns=document.querySelectorAll('[data-logtype].active');
+const type=typeBtns.length?typeBtns[0].dataset.logtype:'WhatsApp';
+const cid=document.getElementById('log-contact-sel')?.value;
+const desc=document.getElementById('log-desc-txt')?.value?.trim();
+if(!cid||!desc){showToast('Contact and description required','error');return}
+DB.activities.unshift({id:'act'+(APP.nextId.act++),contact_id:cid,deal_id:null,agent_id:APP.currentAgent,type,desc,created_at:'2026-07-20 01:05'});
+showToast('Activity logged!','success');render();break}
+case 'invite-agent':{
+const name=document.getElementById('inv-name')?.value?.trim();
+const email=document.getElementById('inv-email')?.value?.trim();
+const territory=document.getElementById('inv-territory')?.value?.trim();
+if(!name||!email){showToast('Name and email required','error');return}
+const newA={id:'a'+(DB.agents.length+1),name,email,status:'invited',whatsapp:'',is_manager:false,territory:territory||'Unassigned',targets:{deals:3,crm:2},avatar:initials(name),joined:'2026-07-20',color:'#3B82F6',role:'agent'};
+DB.agents.push(newA);showToast(name+' invited!','success');render();break}
+case 'save-targets':{document.querySelectorAll('[data-target-agent]').forEach(inp=>{const ag=lookup(DB.agents,inp.dataset.targetAgent);if(ag)ag.targets[inp.dataset.targetType]=parseInt(inp.value)||0});showToast('Targets saved!','success');break}
+case 'mark-paid':{const c=DB.commissions.find(x=>x.id===target.dataset.id);if(c){c.status='paid';c.payout_date='2026-07-20';showToast('Commission marked as paid','success');render()}break}
+case 'toggle-notif':{const track=target.closest('.toggle-track');if(track){track.classList.toggle('on');track.classList.toggle('off');showToast('Notification preference updated','info')}break}
+case 'export-csv':showToast('Export ready — '+DB.contacts.length+' contacts','success');break;
+}});
+
+// Modal overlay close
+document.getElementById('modal-overlay-bw16').addEventListener('click',function(e){if(e.target===this){APP.modal=null;render()}});
+
+// Notification bell
+document.getElementById('notif-btn-bw05').addEventListener('click',e=>{e.stopPropagation();const dd=document.getElementById('notif-dropdown-bw10');dd.style.display=dd.style.display==='none'?'block':'none'});
+
+// User menu
+document.getElementById('user-menu-wrap-bw').addEventListener('click',e=>{e.stopPropagation();const dd=document.getElementById('user-dropdown-bw');dd.style.display=dd.style.display==='none'?'block':'none'});
+
+document.addEventListener('click',()=>{document.getElementById('notif-dropdown-bw10').style.display='none';document.getElementById('user-dropdown-bw').style.display='none'});
+
+// WhatsApp FAB
+document.getElementById('whatsapp-fab-bw17').addEventListener('click',()=>{APP.page='whatsapp';render()});
+
+// Login
+document.getElementById('login-submit-bw07').addEventListener('click',()=>{APP.page='dashboard';render()});
+document.getElementById('login-role-agent-bw05').addEventListener('click',()=>{APP.currentAgent='a1';APP.currentRole='agent';document.getElementById('login-role-agent-bw05').classList.add('active');document.getElementById('login-role-agent-bw05').style.borderColor='rgba(6,182,212,.3)';document.getElementById('login-role-mgr-bw06').classList.remove('active');document.getElementById('login-role-mgr-bw06').style.borderColor='#1E3A52';document.getElementById('login-email-bw01').value='kurly@bluwavgrowth.com'});
+document.getElementById('login-role-mgr-bw06').addEventListener('click',()=>{APP.currentAgent='mgr1';APP.currentRole='manager';document.getElementById('login-role-mgr-bw06').classList.add('active');document.getElementById('login-role-mgr-bw06').style.borderColor='rgba(249,115,22,.3)';document.getElementById('login-role-agent-bw05').classList.remove('active');document.getElementById('login-role-agent-bw05').style.borderColor='#1E3A52';document.getElementById('login-email-bw01').value='andrea@bluwavgrowth.com'});
+document.getElementById('login-eye-bw03').addEventListener('click',()=>{const p=document.getElementById('login-pass-bw02');p.type=p.type==='password'?'text':'password'});
+
+// Mobile hamburger
+const hamburger=document.getElementById('hamburger-btn-bw02');
+const sidebar=document.getElementById('sidebar-bw12');
+const sidebarOverlay=document.getElementById('sidebar-overlay-bw11');
+function openMobileSidebar(){sidebar.classList.remove('hidden');sidebar.classList.add('flex');sidebar.style.position='fixed';sidebar.style.top='56px';sidebar.style.left='0';sidebar.style.bottom='0';sidebar.style.zIndex='60';sidebarOverlay.classList.add('show')}
+function closeMobileSidebar(){if(window.innerWidth<768){sidebar.classList.add('hidden');sidebar.classList.remove('flex');sidebar.style.position='';sidebarOverlay.classList.remove('show')}}
+hamburger.addEventListener('click',()=>{if(sidebar.classList.contains('hidden'))openMobileSidebar();else closeMobileSidebar()});
+sidebarOverlay.addEventListener('click',closeMobileSidebar);
+window.addEventListener('resize',()=>{if(window.innerWidth>=768){sidebar.classList.remove('hidden');sidebar.classList.add('flex');sidebar.style.position='';sidebarOverlay.classList.remove('show')}else{sidebar.classList.add('hidden');sidebar.classList.remove('flex')}});
+
+if(typeof lucide!=='undefined'&&typeof lucide.createIcons==='function'){lucide.createIcons()}
+render();
+</script>
+</body>
+</html>
